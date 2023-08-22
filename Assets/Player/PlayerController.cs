@@ -17,13 +17,13 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        CharacterManager.GetInstance().SetPlayerController(this);
         inventoryManager = new InventoryManager();
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        CharacterManager.GetInstance().SetPlayerController(this);
         GameObject obj = Instantiate(CharacterManager.GetInstance().GetCharacterList()[0].gameObject, transform);
         inventoryManager.SetCurrentEquipCharacter(obj.GetComponent<Characters>());
         rb = inventoryManager.GetCurrentEquipCharacter().gameObject.GetComponent<Rigidbody>();
