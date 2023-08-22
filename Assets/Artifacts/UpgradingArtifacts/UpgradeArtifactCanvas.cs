@@ -1,11 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UpgradeArtifactCanvas : MonoBehaviour
 {
+    [Header("Tab Toggle")]
+    [SerializeField] ToggleGroup TabToggleGroup;
+    [SerializeField] GameObject[] TabContent;
+    private Toggle[] TabToggleGroupList;
+
     [Header("Upgradable Items")]
     [SerializeField] ItemsList itemList;
     [SerializeField] float ScoreUpgradepts;
@@ -30,6 +36,21 @@ public class UpgradeArtifactCanvas : MonoBehaviour
     public SlotPopup SlotPopup
     {
         get { return slotPopup; }
+    }
+
+    private void Awake()
+    {
+        TabToggleGroupList = TabToggleGroup.GetComponentsInChildren<Toggle>();
+        foreach (var tabToggle in TabToggleGroupList)
+        {
+            int index = ArrayUtility.IndexOf(TabToggleGroupList, tabToggle);
+            tabToggle.onValueChanged.AddListener(value => ToggleDetails(index));
+        }
+    }
+
+    void ToggleDetails(int idx)
+    {
+        TabContent[idx].gameObject.SetActive(TabToggleGroupList[idx].isOn);
     }
 
     // Start is called before the first frame update

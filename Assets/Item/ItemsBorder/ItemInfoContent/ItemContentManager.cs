@@ -24,7 +24,7 @@ public class ItemContentManager : MonoBehaviour
             return;
         else
             if (ItemButtonREF.GetItemREF() == null)
-                    return;
+                return;
 
         foreach (GameObject go in ItemContent)
         {

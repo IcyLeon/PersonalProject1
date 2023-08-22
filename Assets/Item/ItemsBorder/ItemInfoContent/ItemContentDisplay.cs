@@ -19,7 +19,7 @@ public class ItemContentDisplay : MonoBehaviour
     [SerializeField] GameObject DetailsPanel;
     [SerializeField] GameObject RarityStarGO;
 
-    void Awake()
+    void Init()
     {
         if (DetailsPanel)
             ArtifactsStatsContainer = DetailsPanel.GetComponentsInChildren<DisplayArtifactStats>();
@@ -32,6 +32,8 @@ public class ItemContentDisplay : MonoBehaviour
     {
         if (artifacts == null)
             return;
+
+        Init();
 
         ArtifactNameText.text = artifacts.GetItemName();
         ArtifactPieceText.text = artifacts.GetItemType();
@@ -51,10 +53,10 @@ public class ItemContentDisplay : MonoBehaviour
                     if (i <= (int)artifacts.GetRarity())
                     {
                         stats.DisplayArtifactsStat(artifacts.GetArtifactStatsName(i), artifacts.GetStats(i), artifacts.GetArtifactStatsValue(i));
-                        stats.gameObject.SetActive(true);
+                        stats.transform.parent.gameObject.SetActive(true);
                     }
                     else
-                        stats.gameObject.SetActive(false);
+                        stats.transform.parent.gameObject.SetActive(false);
                 }
             }
         }
