@@ -40,7 +40,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 40, y: 40}
+  m_SizeDelta: {x: 42, y: 42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7078750027075801863
 CanvasRenderer:
@@ -154,8 +154,8 @@ MonoBehaviour:
     LockImageColor: {r: 0.9254902, g: 0.5176471, b: 0.4509804, a: 1}
     LockImage: {fileID: 21300000, guid: e5809f23e1a2500469285f117dee6767, type: 3}
   UnLockedInfo:
-    LockBackgroundColor: {r: 0.9254902, g: 0.8980392, b: 0.8509804, a: 1}
-    LockImageColor: {r: 0.7176471, g: 0.7176471, b: 0.7176471, a: 1}
+    LockBackgroundColor: {r: 0.95686275, g: 0.9411765, b: 0.92156863, a: 1}
+    LockImageColor: {r: 0.6156863, g: 0.627451, b: 0.654902, a: 1}
     LockImage: {fileID: 21300000, guid: 5501521524551ac43af4ca717720609c, type: 3}
 --- !u!114 &5133348572071189143
 MonoBehaviour:
@@ -213,7 +213,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -26, y: -20}
+  m_SizeDelta: {x: -20, y: -12}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5653525485945207922
 CanvasRenderer:
