@@ -21,7 +21,7 @@ public class DisplayArtifactStats : MonoBehaviour
         else
             ArtifactStatNameText.text = Name + "+" + Value;
 
-        if (CheckIfInBetweenStats(artifactsStat))
+        if (CheckIfInBetweenStats_PERCENT(artifactsStat))
         {
             if (ArtifactStatValueText)
                 ArtifactStatValueText.text = Value + "%";
@@ -30,7 +30,7 @@ public class DisplayArtifactStats : MonoBehaviour
         }
     }
 
-    private bool CheckIfInBetweenStats(ArtifactsStat stat)
+    private bool CheckIfInBetweenStats_PERCENT(ArtifactsStat stat)
     {
         for (int i = (int)ArtifactsStat.HPPERCENT; i <= (int)ArtifactsStat.CritDamage; i++)
         {

@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Experimental;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 
@@ -25,7 +23,7 @@ public class Artifacts : UpgradableItems
         CritDamage
     }
 
-    private Dictionary<ArtifactsStat, string> ArtifactStatsName = new Dictionary<ArtifactsStat, string>()
+    private Dictionary<ArtifactsStat, string> ArtifactStatsName = new()
     {
         { ArtifactsStat.HP, "HP" },
         { ArtifactsStat.HPPERCENT, "HP" },
@@ -55,8 +53,9 @@ public class Artifacts : UpgradableItems
     };
     private List<ArtifactsStat> Stats = new List<ArtifactsStat>();
 
-    private Dictionary<ArtifactsStat, Dictionary<Rarity, float>> MainStatsInfo = new Dictionary<ArtifactsStat, Dictionary<Rarity, float>>()
-    {   {
+    private Dictionary<ArtifactsStat, Dictionary<Rarity, float>> MainStatsInfo = new()
+    {  
+        {
             ArtifactsStat.HP, new Dictionary<Rarity, float>() {
                 { Rarity.ThreeStar, 430f  },
                 { Rarity.FourStar, 645f },
