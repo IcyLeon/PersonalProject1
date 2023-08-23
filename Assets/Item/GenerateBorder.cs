@@ -28,10 +28,10 @@ public class GenerateBorder : MonoBehaviour
             switch(itemButton.GetItemREF())
             {
                 case Item item when item is UpgradableItems:
-                    ConsumableAmountTxt.gameObject.SetActive(false);
+                    UpgradableTxt.gameObject.SetActive(true);
                     break;
                 case Item item when item is ConsumableItem:
-                    UpgradableTxt.gameObject.SetActive(false);
+                    ConsumableAmountTxt.gameObject.SetActive(true);
                     break;
             }
         }

@@ -14,26 +14,14 @@ public class ItemContentDisplay : MonoBehaviour
     [SerializeField] TextMeshProUGUI ArtifactDescText;
     [SerializeField] TextMeshProUGUI Artifact2PieceText;
     [SerializeField] TextMeshProUGUI Artifact4PieceText;
-    private DisplayArtifactStats[] ArtifactsStatsContainer;
-    private Image[] StarDisplayList;
-    [SerializeField] GameObject DetailsPanel;
-    [SerializeField] GameObject RarityStarGO;
+    [SerializeField] GameObject[] ArtifactsStatsContainer;
+    [SerializeField] Image[] StarDisplayList;
 
-    void Init()
-    {
-        if (DetailsPanel)
-            ArtifactsStatsContainer = DetailsPanel.GetComponentsInChildren<DisplayArtifactStats>();
-
-        if (RarityStarGO)
-            StarDisplayList = RarityStarGO.GetComponentsInChildren<Image>();
-    }
 
     void ShowArtifactsItemContent(Artifacts artifacts)
     {
         if (artifacts == null)
             return;
-
-        Init();
 
         ArtifactNameText.text = artifacts.GetItemName();
         ArtifactPieceText.text = artifacts.GetItemType();
@@ -43,21 +31,18 @@ public class ItemContentDisplay : MonoBehaviour
         ArtifactLevelText.text = "+" + artifacts.GetLevel().ToString();
         ArtifactDescText.text = artifacts.GetItemDesc();
 
-        if (ArtifactsStatsContainer != null)
+        for (int i = 0; i < ArtifactsStatsContainer.Length; i++)
         {
-            for (int i = 0; i < ArtifactsStatsContainer.Length; i++)
+            DisplayArtifactStats stats = ArtifactsStatsContainer[i].GetComponent<DisplayArtifactStats>();
+            if (stats != null)
             {
-                DisplayArtifactStats stats = ArtifactsStatsContainer[i];
-                if (stats != null)
+                if (i <= (int)artifacts.GetRarity())
                 {
-                    if (i <= (int)artifacts.GetRarity())
-                    {
-                        stats.DisplayArtifactsStat(artifacts.GetArtifactStatsName(i), artifacts.GetStats(i), artifacts.GetArtifactStatsValue(i));
-                        stats.transform.parent.gameObject.SetActive(true);
-                    }
-                    else
-                        stats.transform.parent.gameObject.SetActive(false);
+                    stats.DisplayArtifactsStat(artifacts.GetArtifactStatsName(i), artifacts.GetStats(i), artifacts.GetArtifactStatsValue(i));
+                    stats.gameObject.SetActive(true);
                 }
+                else
+                    stats.gameObject.SetActive(false);
             }
         }
     }
@@ -75,18 +60,16 @@ public class ItemContentDisplay : MonoBehaviour
                 break;
         }
 
-        if (RarityStarGO)
+
+        for (int i = 0; i < StarDisplayList.Length; i++)
         {
-            for (int i = 0; i < StarDisplayList.Length; i++)
+            if (i <= (int)SelectedItem.GetRarity())
             {
-                if (i <= (int)SelectedItem.GetRarity())
-                {
-                    StarDisplayList[i].gameObject.SetActive(true);
-                }
-                else
-                {
-                    StarDisplayList[i].gameObject.SetActive(false);
-                }
+                StarDisplayList[i].gameObject.SetActive(true);
+            }
+            else
+            {
+                StarDisplayList[i].gameObject.SetActive(false);
             }
         }
     }

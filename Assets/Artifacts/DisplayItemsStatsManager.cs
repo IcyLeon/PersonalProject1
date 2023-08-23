@@ -94,6 +94,9 @@ public class DisplayItemsStatsManager : MonoBehaviour
 
     public Item GetItemCurrentSelected()
     {
+        if (selectedItemButton == null)
+            return null;
+
         return selectedItemButton.GetItemREF();
     }
 }
