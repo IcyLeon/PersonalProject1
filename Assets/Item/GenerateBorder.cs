@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static ItemsList;
 
 public class GenerateBorder : MonoBehaviour
 {
     private Image[] StarDisplayList;
     [SerializeField] ItemsList itemlisttemplate;
+    [SerializeField] Image Background;
     [SerializeField] GameObject StarDisplayContainer;
     [SerializeField] ItemButton itemButton;
     [SerializeField] TextMeshProUGUI ConsumableAmountTxt;
@@ -72,6 +72,6 @@ public class GenerateBorder : MonoBehaviour
                 StarDisplayList[i].gameObject.SetActive(false);
             }
         }
-        GetComponent<Image>().sprite = itemlisttemplate.raritylist[(int)rarity].rarityborderimage;
+        Background.sprite = itemlisttemplate.raritylist[(int)rarity].rarityborderimage;
     }
 }

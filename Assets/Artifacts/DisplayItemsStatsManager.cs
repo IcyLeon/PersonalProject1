@@ -26,7 +26,7 @@ public class DisplayItemsStatsManager : MonoBehaviour
 
     [Header("Display Artifacts")]
     [SerializeField] TabGroup TabGroup;
-    private ItemButton selectedItemButton;
+    private ItemButton selectedItemButton, previousselectedItemButton;
 
     // Start is called before the first frame update
     void Start()
@@ -97,8 +97,13 @@ public class DisplayItemsStatsManager : MonoBehaviour
 
     private void GetItemSelected(ItemButton itemButton)
     {
+        previousselectedItemButton = selectedItemButton;
+        if (previousselectedItemButton)
+            previousselectedItemButton.ToggleSelection(false);
+
         selectedItemButton = itemButton;
         SelectedItemImage.sprite = selectedItemButton.GetItemREF().GetItemSprite();
+        selectedItemButton.ToggleSelection(true);
 
         if (selectedItemButton == null)
             return;

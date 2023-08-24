@@ -10,7 +10,6 @@ using UnityEngine.UI;
 public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandler, IPointerExitHandler
 {
     private Color ImageColor;
-    private Image MainImage;
     [Header("Get Item Reference")]
     private Item itemREF;
     private Sprite itemSprite;
@@ -20,6 +19,7 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
     public event SendItemButtonInfo onButtonRemoveClick;
     public event SendItemButtonInfo onButtonSpawn;
 
+    [SerializeField] Image Outline;
     [SerializeField] Button RemoveImage;
     [SerializeField] Image ItemImage;
     [SerializeField] Image NewImage;
@@ -46,10 +46,8 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
 
     private void Awake()
     {
-        MainImage = GetComponent<Image>();
         ItemButton_Rect = GetComponent<RectTransform>();
         RemoveImage.onClick.AddListener(RemoveItemEvent);
-        ImageColor = MainImage.color;
     }
     private void RemoveItemEvent()
     {
@@ -154,6 +152,11 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
     {
         NewImage.gameObject.SetActive(false);
     }
+
+    public void ToggleSelection(bool toggle)
+    {
+        Outline.gameObject.SetActive(toggle);
+    }
     public void SetItemREF(Item item)
     {
         itemREF = item;
@@ -166,8 +169,7 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        Color newColor = new Color32(255, 255, 255, 255);
-        MainImage.color = newColor;
+
     }
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -182,13 +184,13 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
 
         onButtonClick?.Invoke(this);
 
-        MainImage.color = ImageColor;
+        // MainImage.color = ImageColor;
 
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        MainImage.color = ImageColor;
+       // MainImage.color = ImageColor;
     }
 
     private void OnDestroy()
