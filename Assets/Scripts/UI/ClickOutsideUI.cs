@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ClickOutsideUI : MonoBehaviour
+public class ClickOutsideUI : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] GameObject[] TargetUI;
     [SerializeField] GameObject Mask;
@@ -12,11 +12,6 @@ public class ClickOutsideUI : MonoBehaviour
     void Update()
     {
         ToggleMask();
-        if (Input.GetMouseButtonUp(0) && !AssetManager.GetInstance().GetDragItem())
-        {
-            if (!CheckIfHoveredUIObjectContent())
-                Close();
-        }
     }
 
     void ToggleMask()
@@ -99,5 +94,11 @@ public class ClickOutsideUI : MonoBehaviour
                 break;
             }
         }
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (!CheckIfHoveredUIObjectContent())
+            Close();
     }
 }

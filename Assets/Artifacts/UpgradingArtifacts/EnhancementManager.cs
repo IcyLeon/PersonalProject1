@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEditor.Experimental;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -13,13 +14,57 @@ public class EnhancementManager : MonoBehaviour
 {
     [Header("Enhancement Infomation")]
     [SerializeField] int EnhancementItemToSell;
+    [SerializeField] float ScoreUpgradepts;
     [SerializeField] UpgradeArtifactCanvas upgradeArtifactCanvas;
+    [SerializeField] Image selectedItemImage;
+    [SerializeField] TextMeshProUGUI LevelDisplay, ExpAmountDisplay;
     [SerializeField] Button AutoAddBtn;
     [SerializeField] Button UpgradeBtn;
+    [SerializeField] Slider upgradeprogressslider;
     [SerializeField] TMP_Dropdown AutoAddSelection;
+    [SerializeField] ItemsList itemList;
+    [SerializeField] Transform SlotsParent;
     List<GameObject> EnhancementItemList = new List<GameObject>();
     private int NoofItemsAdded;
     private int RaritySelection;
+
+    [Header("Artifacts Stats")]
+    [SerializeField] GameObject[] ArtifactsStatsContainer;
+    private float UpgradeElasped;
+    private float smoothDampVelocity;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        CharacterManager.GetInstance().GetPlayerStats().onInventoryListChanged += OnInventoryListChanged;
+        OnInventoryListChanged();
+
+        LoadEmptySlots();
+        AutoAddBtn.onClick.AddListener(AutoAdd);
+        UpgradeBtn.onClick.AddListener(UpgradeItem);
+        AutoAddSelection.onValueChanged.AddListener(delegate
+        {
+            RaritySelection = AutoAddSelection.value;
+        }
+        );
+
+
+        int[] CostList = itemList.GetCostListStatus(GetItemREF().GetRarity());
+        SetProgressUpgrades(0, CostList[0]);
+    }
+
+    private void Update()
+    {
+        for (int i = EnhancementItemList.Count - 1; i >= 0; i--)
+        {
+            Slot slot = EnhancementItemList[i].GetComponent<Slot>();
+            if (slot.GetItemButton()?.GetItemREF() is UpgradableItems upgradableItem && upgradableItem.GetLockStatus())
+            {
+                slot.SetItemButton(null);
+            }
+        }
+        UpdateContent();
+    }
 
     public Item GetItemREF()
     {
@@ -74,6 +119,33 @@ public class EnhancementManager : MonoBehaviour
         return null;
     }
 
+    private void UpdateContent()
+    {
+        if (GetItemREF() == null)
+            return;
+
+        UpgradableItems UpgradableItemREF = GetItemREF() as UpgradableItems;
+        selectedItemImage.sprite = UpgradableItemREF.GetItemSprite();
+        LevelDisplay.text = "+" + UpgradableItemREF.GetLevel().ToString();
+        ExpAmountDisplay.text = ((int)upgradeprogressslider.value).ToString() + "/" + upgradeprogressslider.maxValue.ToString();
+
+        Artifacts selectedartifacts = UpgradableItemREF as Artifacts;
+        for (int i = 0; i < ArtifactsStatsContainer.Length; i++)
+        {
+            DisplayArtifactStats stats = ArtifactsStatsContainer[i].GetComponent<DisplayArtifactStats>();
+            if (stats != null)
+            {
+                if (i <= (int)selectedartifacts.GetRarity())
+                {
+                    stats.DisplayArtifactsStat(selectedartifacts.GetArtifactStatsName(i), selectedartifacts.GetStats(i), selectedartifacts.GetArtifactStatsValue(i));
+                    stats.gameObject.SetActive(true);
+                }
+                else
+                    stats.gameObject.SetActive(false);
+            }
+        }
+    }
+
     private int GetTotalSlots()
     {
         return EnhancementItemList.Count;
@@ -110,8 +182,7 @@ public class EnhancementManager : MonoBehaviour
 
         for (int i = 0; i < EnhancementItemToSell; i++)
         {
-            GameObject enhancementitemslot = Instantiate(AssetManager.GetInstance().SlotPrefab);
-            enhancementitemslot.transform.SetParent(transform.GetChild(0));
+            GameObject enhancementitemslot = Instantiate(AssetManager.GetInstance().SlotPrefab, SlotsParent);
             Slot slot = enhancementitemslot.GetComponent<Slot>();
             upgradeArtifactCanvas.SlotPopup.SubscribeSlot(slot);
             slot.onSlotClick += RemoveSelfItemButton;
@@ -180,34 +251,47 @@ public class EnhancementManager : MonoBehaviour
                 DisplayFullError();
         }
     }
-    
-    // Start is called before the first frame update
-    void Start()
+   
+
+    IEnumerator UpgradeProgress()
     {
-        CharacterManager.GetInstance().GetPlayerStats().onInventoryListChanged += OnInventoryListChanged;
-        OnInventoryListChanged();
+        UpgradableItems UpgradableItemREF = GetItemREF() as UpgradableItems;
+        int[] CostList = itemList.GetCostListStatus(GetItemREF().GetRarity());
 
-        LoadEmptySlots();
-        AutoAddBtn.onClick.AddListener(AutoAdd);
-        UpgradeBtn.onClick.AddListener(UpgradeItem);
-        AutoAddSelection.onValueChanged.AddListener(delegate
+        while (GetItemREF() != null)
+        {
+            if (UpgradableItemREF.GetLevel() < CostList.Length)
             {
-                RaritySelection = AutoAddSelection.value;
+                float threshold = 1f;
+                if (Mathf.Abs(upgradeprogressslider.value - upgradeprogressslider.maxValue) < threshold)
+                {
+                    if ((UpgradableItemREF.GetLevel() + 1) < CostList.Length)
+                    {
+                        SetProgressUpgrades(CostList[UpgradableItemREF.GetLevel()], CostList[UpgradableItemREF.GetLevel() + 1]);
+                        //upgradeprogressslider.value = upgradeprogressslider.minValue;
+                    }
+                    UpgradableItemREF.Upgrade();
+                }
             }
-        );
 
+            float smoothTime = 0.2f;
+            float maxSpeed = Mathf.Infinity;
+            upgradeprogressslider.value = Mathf.SmoothDamp(upgradeprogressslider.value, ScoreUpgradepts, ref smoothDampVelocity, smoothTime, maxSpeed, Time.deltaTime);
+            yield return null;
+        }
     }
 
-    private void Update()
+    void SetProgressUpgrades(float min, float max)
     {
-        for (int i = EnhancementItemList.Count - 1; i >= 0; i--)
-        {
-            Slot slot = EnhancementItemList[i].GetComponent<Slot>();
-            if (slot.GetItemButton()?.GetItemREF() is UpgradableItems upgradableItem && upgradableItem.GetLockStatus())
-            {
-                slot.SetItemButton(null);
-            }
-        }
+        upgradeprogressslider.minValue = min;
+        upgradeprogressslider.maxValue = max;
+    }
+
+    public void EnhanceUpgrade()
+    {
+        ScoreUpgradepts += 500;
+        UpgradeElasped = 0;
+        StartCoroutine(UpgradeProgress());
     }
 
     private void AutoAdd()
@@ -234,7 +318,7 @@ public class EnhancementManager : MonoBehaviour
             return;
         }
 
-        upgradeArtifactCanvas.EnhanceUpgrade();
+        EnhanceUpgrade();
 
         for (int i = 0; i < GetEnhancementItemList().Count; i++)
         {

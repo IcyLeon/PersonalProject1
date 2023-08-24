@@ -8,6 +8,14 @@ using static PlayerStats;
 
 public class DisplayItemsStatsManager : MonoBehaviour
 {
+    [System.Serializable]
+    public struct Background
+    {
+        public GameObject BackgroundGO;
+        public Rarity Rarity;
+    }
+    [SerializeField] Background[] Backgrounds;
+
     [Header("Display Upgradable in Inventory")]
     [SerializeField] ScrollRect ScrollRect;
     [SerializeField] GameObject DetailsPanel;
@@ -29,6 +37,15 @@ public class DisplayItemsStatsManager : MonoBehaviour
         DetailsPanel.SetActive(false);
     }
 
+    void SetCurrentBackground(Rarity rarity)
+    {
+        for (int i = 0; i < Backgrounds.Length; i++)
+        {
+            Backgrounds[i].BackgroundGO.SetActive(false);
+            if (Backgrounds[i].Rarity == rarity)
+                Backgrounds[i].BackgroundGO.SetActive(true);
+        }
+    }
 
     // Update is called once per frame
     void DisplaySelectedItem()
@@ -38,6 +55,8 @@ public class DisplayItemsStatsManager : MonoBehaviour
             LockButton.SetItemREF(selectedItemButton.GetItemREF());
             UpgradeButton.GetComponent<UpgradeCanvasTransition>().SetItemButtonREF(selectedItemButton);
             ItemContentDisplay.RefreshItemContentDisplay(selectedItemButton.GetItemREF());
+
+            SetCurrentBackground(selectedItemButton.GetItemREF().GetRarity());
         }
     }
 
@@ -84,10 +103,8 @@ public class DisplayItemsStatsManager : MonoBehaviour
         if (selectedItemButton == null)
             return;
 
-        if (selectedItemButton.GetItemREF() != null)
-            DetailsPanel.SetActive(true);
-        else
-            DetailsPanel.SetActive(false);
+
+        DetailsPanel.SetActive(selectedItemButton.GetItemREF() != null);
 
         DisplaySelectedItem();
     }

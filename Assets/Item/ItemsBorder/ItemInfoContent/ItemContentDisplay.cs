@@ -26,8 +26,8 @@ public class ItemContentDisplay : MonoBehaviour
         ArtifactNameText.text = artifacts.GetItemName();
         ArtifactPieceText.text = artifacts.GetItemType();
         ArtifactSetText.text = artifacts.artifactsInfo.ArtifactsSetName + ":";
-        Artifact2PieceText.text = artifacts.Get2PieceType();
-        Artifact4PieceText.text = artifacts.Get4PieceType();
+        Artifact2PieceText.text = "2-Piece Set: " + artifacts.Get2PieceType();
+        Artifact4PieceText.text = "4-Piece Set: " + artifacts.Get4PieceType();
         ArtifactLevelText.text = "+" + artifacts.GetLevel().ToString();
         ArtifactDescText.text = artifacts.GetItemDesc();
 
