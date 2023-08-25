@@ -20,6 +20,7 @@ public class EnhancementManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI LevelDisplay, ExpAmountDisplay;
     [SerializeField] Button AutoAddBtn;
     [SerializeField] Button UpgradeBtn;
+    [SerializeField] Button ClearAllBtn;
     [SerializeField] Slider upgradeprogressslider;
     [SerializeField] TMP_Dropdown AutoAddSelection;
     [SerializeField] ItemsList itemList;
@@ -42,6 +43,7 @@ public class EnhancementManager : MonoBehaviour
         LoadEmptySlots();
         AutoAddBtn.onClick.AddListener(AutoAdd);
         UpgradeBtn.onClick.AddListener(UpgradeItem);
+        ClearAllBtn.onClick.AddListener(ClearAll);
         AutoAddSelection.onValueChanged.AddListener(delegate
         {
             RaritySelection = AutoAddSelection.value;
@@ -121,27 +123,29 @@ public class EnhancementManager : MonoBehaviour
 
     private void UpdateContent()
     {
-        if (GetItemREF() == null)
-            return;
+        ClearAllBtn.gameObject.SetActive(GetNoofSlotsTaken() != 0);
 
-        UpgradableItems UpgradableItemREF = GetItemREF() as UpgradableItems;
-        selectedItemImage.sprite = UpgradableItemREF.GetItemSprite();
-        LevelDisplay.text = "+" + UpgradableItemREF.GetLevel().ToString();
-        ExpAmountDisplay.text = ((int)upgradeprogressslider.value).ToString() + "/" + upgradeprogressslider.maxValue.ToString();
-
-        Artifacts selectedartifacts = UpgradableItemREF as Artifacts;
-        for (int i = 0; i < ArtifactsStatsContainer.Length; i++)
+        if (GetItemREF() != null)
         {
-            DisplayArtifactStats stats = ArtifactsStatsContainer[i].GetComponent<DisplayArtifactStats>();
-            if (stats != null)
+            UpgradableItems UpgradableItemREF = GetItemREF() as UpgradableItems;
+            selectedItemImage.sprite = UpgradableItemREF.GetItemSprite();
+            LevelDisplay.text = "+" + UpgradableItemREF.GetLevel().ToString();
+            ExpAmountDisplay.text = ((int)upgradeprogressslider.value).ToString() + "/" + upgradeprogressslider.maxValue.ToString();
+
+            Artifacts selectedartifacts = UpgradableItemREF as Artifacts;
+            for (int i = 0; i < ArtifactsStatsContainer.Length; i++)
             {
-                if (i <= (int)selectedartifacts.GetRarity())
+                DisplayArtifactStats stats = ArtifactsStatsContainer[i].GetComponent<DisplayArtifactStats>();
+                if (stats != null)
                 {
-                    stats.DisplayArtifactsStat(selectedartifacts.GetArtifactStatsName(i), selectedartifacts.GetStats(i), selectedartifacts.GetArtifactStatsValue(i));
-                    stats.gameObject.SetActive(true);
+                    if (i <= (int)selectedartifacts.GetRarity())
+                    {
+                        stats.DisplayArtifactsStat(selectedartifacts.GetArtifactStatsName(i), selectedartifacts.GetStats(i), selectedartifacts.GetArtifactStatsValue(i));
+                        stats.gameObject.SetActive(true);
+                    }
+                    else
+                        stats.gameObject.SetActive(false);
                 }
-                else
-                    stats.gameObject.SetActive(false);
             }
         }
     }
@@ -223,6 +227,17 @@ public class EnhancementManager : MonoBehaviour
         if (ExistitemButton != null)
             GetSlotAt(ExistitemButton).SetItemButton(null);
     }
+
+    private void ClearAll()
+    {
+        for (int i = 0; i < EnhancementItemList.Count; i++)
+        {
+            Slot slot = EnhancementItemList[i].GetComponent<Slot>();
+            if (slot.GetItemButton() != null)
+                GetSlotAt(slot.GetItemButton()).SetItemButton(null);
+        }
+    }
+
     private void ManualAddItems(object sender, SendSlotInfo e)
     {
         ItemButton ExistitemButton = CheckIfItemalreadyExist(e.itemButtonREF.GetItemREF());

@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandler, IPointerExitHandler
+public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandler, IPointerExitHandler, IPointerEnterHandler
 {
     private Color ImageColor;
     [Header("Get Item Reference")]
@@ -97,11 +97,15 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
         onButtonSpawn?.Invoke(this);
 
         gameObject.transform.localPosition = new Vector3(gameObject.transform.localPosition.x, gameObject.transform.localPosition.y , 0);
+        transform.localScale = Vector3.one;
     }
 
     private void Update()
     {
         UpdateHideLock();
+
+        if (Outline.gameObject.activeSelf)
+            transform.localScale = new Vector3(1.03f, 1.03f, 1f);
     }
 
     public void ToggleRemoveItemImage(bool input)
@@ -157,6 +161,8 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
     public void ToggleSelection(bool toggle)
     {
         Outline.gameObject.SetActive(toggle);
+        if (!toggle)
+            transform.localScale = Vector3.one;
     }
     public void SetItemREF(Item item)
     {
@@ -170,7 +176,7 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
 
     public void OnPointerDown(PointerEventData eventData)
     {
-
+        transform.localScale = new Vector3(0.95f, 0.95f, 1f);
     }
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -184,14 +190,12 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
         }
 
         onButtonClick?.Invoke(this);
-
-        // MainImage.color = ImageColor;
-
+        transform.localScale = Vector3.one;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-       // MainImage.color = ImageColor;
+        transform.localScale = Vector3.one;
     }
 
     private void OnDestroy()
@@ -201,5 +205,10 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
         dragnDrop.onDragEvent -= OnDrag;
         dragnDrop.onEndDragEvent -= OnEndDrag;
         AssetManager.GetInstance().SetDragItem(null);
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        transform.localScale = new Vector3(1.03f, 1.03f, 1f);
     }
 }
