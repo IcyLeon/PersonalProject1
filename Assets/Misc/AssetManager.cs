@@ -38,4 +38,13 @@ public class AssetManager : MonoBehaviour
     {
         //PopupPanel.SetMessage(text);
     }
+
+    public void UpdateCurrentSelectionOutline(ItemButton prev, ItemButton current)
+    {
+        if (prev)
+            prev.ToggleSelection(false);
+
+        current.ToggleSelection(true);
+    }
+    
 }

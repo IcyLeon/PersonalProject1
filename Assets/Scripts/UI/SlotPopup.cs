@@ -21,6 +21,7 @@ public class SlotPopup : MonoBehaviour
     public event EventHandler<SendSlotInfo> onSlotSend, onSlotItemRemove;
     [SerializeField] bool AllowDragnDrop;
     private Slot SlotREF;
+    private ItemButton selectedItemButton, previousselectedItemButton;
 
     // Update is called once per frame
     void Start()
@@ -133,6 +134,10 @@ public class SlotPopup : MonoBehaviour
 
     private void GetItemSelected(ItemButton itemButton)
     {
+        previousselectedItemButton = selectedItemButton;
+        selectedItemButton = itemButton;
+        AssetManager.GetInstance().UpdateCurrentSelectionOutline(previousselectedItemButton, selectedItemButton);
+
         if (SlotREF == null)
             return;
 
@@ -156,6 +161,11 @@ public class SlotPopup : MonoBehaviour
         if (SlotREF.GetItemButton())
         {
             ItemInfoContent.SetItemButtonREF(SlotREF.GetItemButton());
+            previousselectedItemButton = selectedItemButton;
+            selectedItemButton = GetItemButton(SlotREF.GetItemButton().GetItemREF());
+
+            AssetManager.GetInstance().UpdateCurrentSelectionOutline(previousselectedItemButton, selectedItemButton);
+
             ItemInfoContent.TogglePopup(true);
         }
 

@@ -7,11 +7,6 @@ using UnityEngine.UI;
 
 public class UpgradeArtifactCanvas : MonoBehaviour
 {
-    [Header("Tab Toggle")]
-    [SerializeField] ToggleGroup TabToggleGroup;
-    [SerializeField] GameObject[] TabContent;
-    private Toggle[] TabToggleGroupList;
-
     [Header("Upgradable Items")]
     [SerializeField] Image UpgradeItemsIcon;
     [SerializeField] TextMeshProUGUI UpgradeItemsType;
@@ -27,21 +22,6 @@ public class UpgradeArtifactCanvas : MonoBehaviour
     public SlotPopup SlotPopup
     {
         get { return slotPopup; }
-    }
-
-    private void Awake()
-    {
-        TabToggleGroupList = TabToggleGroup.GetComponentsInChildren<Toggle>();
-        foreach (var tabToggle in TabToggleGroupList)
-        {
-            int index = ArrayUtility.IndexOf(TabToggleGroupList, tabToggle);
-            tabToggle.onValueChanged.AddListener(value => ToggleDetails(index));
-        }
-    }
-
-    void ToggleDetails(int idx)
-    {
-        TabContent[idx].gameObject.SetActive(TabToggleGroupList[idx].isOn);
     }
 
     // Update is called once per frame

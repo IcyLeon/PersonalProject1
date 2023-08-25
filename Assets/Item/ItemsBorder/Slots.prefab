@@ -104,7 +104,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8afc31afa7f487b41bbb61740f2b6ecc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotItemButtonPrefab: {fileID: 5117009378638399214, guid: eaae2fd93d549274883a11e9ffce66e6, type: 3}
+  slotItemButtonPrefab: {fileID: 5117009378638399214, guid: eaae2fd93d549274883a11e9ffce66e6,
+    type: 3}
   ContentContainer: {fileID: 749712754720770082}
 --- !u!1818360610 &2256593244000918429
 ScaleConstraint:
@@ -269,7 +270,8 @@ MonoBehaviour:
   m_text: --
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 91a77e26f491a91489d36e4cfed49599, type: 2}
-  m_sharedMaterial: {fileID: 3612584417579126279, guid: 91a77e26f491a91489d36e4cfed49599, type: 2}
+  m_sharedMaterial: {fileID: 3612584417579126279, guid: 91a77e26f491a91489d36e4cfed49599,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

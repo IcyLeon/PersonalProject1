@@ -98,12 +98,9 @@ public class DisplayItemsStatsManager : MonoBehaviour
     private void GetItemSelected(ItemButton itemButton)
     {
         previousselectedItemButton = selectedItemButton;
-        if (previousselectedItemButton)
-            previousselectedItemButton.ToggleSelection(false);
-
         selectedItemButton = itemButton;
+        AssetManager.GetInstance().UpdateCurrentSelectionOutline(previousselectedItemButton, selectedItemButton);
         SelectedItemImage.sprite = selectedItemButton.GetItemREF().GetItemSprite();
-        selectedItemButton.ToggleSelection(true);
 
         if (selectedItemButton == null)
             return;

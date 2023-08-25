@@ -59,12 +59,13 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
         if (parentTransform == null)
             parentTransform = AssetManager.GetInstance().canvas.transform;
 
-        GameObject go = Instantiate(gameObject, parentTransform, false);
+        GameObject go = Instantiate(AssetManager.GetInstance().ItemBorderPrefab, parentTransform, false);
         go.transform.SetAsLastSibling();
         ItemButton_Drag = go.GetComponent<ItemButton>();
-        ItemButton_Drag.GetItemButtonRect().sizeDelta = ItemButton_Rect.sizeDelta;
         ItemButton_Drag.CanvasGroup.blocksRaycasts = false;
-        AssetManager.GetInstance().SetDragItem(go);
+        ItemButton_Drag.SetItemREF(ItemButton_Rect.GetComponent<ItemButton>().GetItemREF());
+        ItemButton_Drag.GetItemREF().isNew = false;
+        AssetManager.GetInstance().SetDragItem(ItemButton_Drag.transform.gameObject);
     }
 
     public void OnBeginDrag(PointerEventData eventData, Transform parentTransform)
@@ -80,8 +81,7 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
         if (ItemButton_Drag == null)
             return;
 
-        ItemButton_Drag.GetItemButtonRect().anchoredPosition = eventData.position;
-        //ItemButton_Drag.GetItemButtonRect().anchoredPosition += eventData.delta / AssetManager.GetInstance().canvas.scaleFactor;
+        ItemButton_Drag.GetItemButtonRect().anchoredPosition = eventData.position - (AssetManager.GetInstance().canvas.renderingDisplaySize / 2f);
     }
     public void OnEndDrag(PointerEventData eventData)
     {
@@ -138,6 +138,7 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
                 Artifacts artifacts = itemREF as Artifacts;
                 itemSprite = ArtifactsManager.instance.GetArtifactPiece(artifacts.type, artifacts.artifactsInfo).ArtifactImage;
             }
+
             if (itemREF.isNew)
             {
                 NewImage.gameObject.SetActive(true);
