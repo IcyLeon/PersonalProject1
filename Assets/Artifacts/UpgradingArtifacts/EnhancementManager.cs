@@ -34,6 +34,8 @@ public class EnhancementManager : MonoBehaviour
     private float UpgradeElasped;
     private float smoothDampVelocity;
 
+
+    private Slot selectedSlot, previousselectedSlot;
     // Start is called before the first frame update
     void Start()
     {
@@ -85,6 +87,7 @@ public class EnhancementManager : MonoBehaviour
         }
         return null;
     }
+
 
     private Slot GetSlotAt(ItemButton itembutton)
     {
@@ -179,7 +182,7 @@ public class EnhancementManager : MonoBehaviour
         {
             Slot slot = EnhancementItemList[i].GetComponent<Slot>();
             upgradeArtifactCanvas.SlotPopup.UnSubscribeSlot(slot);
-            slot.onSlotClick -= RemoveSelfItemButton;
+            slot.onSlotClick -= GetSlotSelected;
             slot.SlotItemButtonChanged -= OnSlotItemButtonChanged;
             Destroy(EnhancementItemList[i].gameObject);
         }
@@ -189,7 +192,7 @@ public class EnhancementManager : MonoBehaviour
             GameObject enhancementitemslot = Instantiate(AssetManager.GetInstance().SlotPrefab, SlotsParent);
             Slot slot = enhancementitemslot.GetComponent<Slot>();
             upgradeArtifactCanvas.SlotPopup.SubscribeSlot(slot);
-            slot.onSlotClick += RemoveSelfItemButton;
+            slot.onSlotClick += GetSlotSelected;
             slot.SlotItemButtonChanged += OnSlotItemButtonChanged;
             EnhancementItemList.Add(enhancementitemslot);
         }
@@ -210,13 +213,17 @@ public class EnhancementManager : MonoBehaviour
         }
     }
 
-    private void RemoveSelfItemButton(Slot slot) // remove the item that we want to upgrade from the Popup UI, slot is a dummy code
+    private void GetSlotSelected(Slot slot) // remove the item that we want to upgrade from the Popup UI, slot is a dummy code
     {
+        previousselectedSlot = selectedSlot;
+        selectedSlot = slot;
+        AssetManager.GetInstance().UpdateCurrentSelectionOutline(previousselectedSlot, selectedSlot);
+
         upgradeArtifactCanvas.SlotPopup.HideItem(GetItemREF());
     }
     private void OnInventoryListChanged()
     {
-        RemoveSelfItemButton(null);
+        GetSlotSelected(null);
     }
 
     private void ManualRemoveItems(object sender, SendSlotInfo e)
@@ -228,7 +235,7 @@ public class EnhancementManager : MonoBehaviour
             GetSlotAt(ExistitemButton).SetItemButton(null);
     }
 
-    private void ClearAll()
+    public void ClearAll()
     {
         for (int i = 0; i < EnhancementItemList.Count; i++)
         {

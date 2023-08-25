@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -22,10 +23,11 @@ public class TabContentManager : MonoBehaviour
             int index = ArrayUtility.IndexOf(TabToggleGroupList, tabToggle);
             tabToggle.onValueChanged.AddListener(value => ToggleDetails(index));
         }
-
+    }
+    private void Start()
+    {
         Toggle(TabToggleGroup.GetFirstActiveToggle());
     }
-
     void ToggleDetails(int idx)
     {
         TabContent[idx].gameObject.SetActive(TabToggleGroupList[idx].isOn);

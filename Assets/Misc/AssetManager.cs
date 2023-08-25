@@ -1,6 +1,12 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+public interface IToggle
+{
+    void ToggleSelection(bool toggle);
+}
 
 public class AssetManager : MonoBehaviour
 {
@@ -39,12 +45,16 @@ public class AssetManager : MonoBehaviour
         //PopupPanel.SetMessage(text);
     }
 
-    public void UpdateCurrentSelectionOutline(ItemButton prev, ItemButton current)
+    public void UpdateCurrentSelectionOutline(IToggle prev, IToggle current)
     {
-        if (prev)
+        if (prev != null)
+        {
             prev.ToggleSelection(false);
-
-        current.ToggleSelection(true);
+        }
+        if (current != null)
+        {
+            current.ToggleSelection(true);
+        }
     }
-    
+
 }

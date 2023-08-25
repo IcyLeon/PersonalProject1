@@ -37,7 +37,6 @@ public class UpgradeArtifactCanvas : MonoBehaviour
 
         gameObject.SetActive(true);
         UpgradeItemsType.text = GetItemREF().GetItemType() + " / " + GetItemREF().GetItemName();
-        itemREF = ItemButtonREF.GetItemREF();
         ItemContentManager.SetItemButtonREF(ItemButtonREF);
         slotPopup.OnInventoryListChanged();
     }

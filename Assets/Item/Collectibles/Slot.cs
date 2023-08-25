@@ -5,13 +5,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class Slot : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerExitHandler, IDropHandler
+public class Slot : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerExitHandler, IDropHandler, IPointerEnterHandler, IToggle
 {
-    private Color ImageColor;
-    private Image MainImage;
-
     [SerializeField] GameObject slotItemButtonPrefab;
     [SerializeField] GameObject ContentContainer;
+    [SerializeField] Image Outline;
     private ItemButton itembutton;
 
     public delegate void SendSlotClick(Slot slot);
@@ -20,16 +18,6 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IP
     public delegate void onSlotItemButtonChanged(SendSlotInfo sendslotInfo, Item item);
     public event onSlotItemButtonChanged SlotItemButtonChanged;
 
-    private void Awake()
-    {
-        MainImage = GetComponent<Image>();
-        ImageColor = MainImage.color;
-    }
-
-    void Start()
-    {
-        gameObject.transform.localPosition = new Vector3(gameObject.transform.localPosition.x, gameObject.transform.localPosition.y, 0);
-    }
     public void SetItemButton(Item item)
     {
         if (itembutton != null)
@@ -74,20 +62,18 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IP
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        MainImage.color = ImageColor;
-
+        transform.localScale = Vector3.one;
         onSlotClick?.Invoke(this);
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        Color newColor = new Color32(255, 255, 255, 255);
-        MainImage.color = newColor;
+        transform.localScale = new Vector3(0.95f, 0.95f, 1f);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        MainImage.color = ImageColor;
+        transform.localScale = Vector3.one;
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -97,5 +83,17 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IP
             return;
 
         SetItemButton(itemButton.GetItemREF());
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        transform.localScale = new Vector3(1.02f, 1.02f, 1f);
+    }
+
+    void IToggle.ToggleSelection(bool toggle)
+    {
+        Outline.gameObject.SetActive(toggle);
+        if (!toggle)
+            transform.localScale = Vector3.one;
     }
 }

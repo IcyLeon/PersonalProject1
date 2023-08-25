@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandler, IPointerExitHandler, IPointerEnterHandler
+public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandler, IPointerExitHandler, IPointerEnterHandler, IToggle
 {
     private Color ImageColor;
     [Header("Get Item Reference")]
@@ -105,7 +105,7 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
         UpdateHideLock();
 
         if (Outline.gameObject.activeSelf)
-            transform.localScale = new Vector3(1.03f, 1.03f, 1f);
+            transform.localScale = new Vector3(1.02f, 1.02f, 1f);
     }
 
     public void ToggleRemoveItemImage(bool input)
@@ -158,12 +158,13 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
         NewImage.gameObject.SetActive(false);
     }
 
-    public void ToggleSelection(bool toggle)
+    void IToggle.ToggleSelection(bool toggle)
     {
         Outline.gameObject.SetActive(toggle);
         if (!toggle)
             transform.localScale = Vector3.one;
     }
+
     public void SetItemREF(Item item)
     {
         itemREF = item;
@@ -176,7 +177,7 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        transform.localScale = new Vector3(0.95f, 0.95f, 1f);
+        transform.localScale = new Vector3(0.97f, 0.97f, 1f);
     }
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -209,6 +210,6 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        transform.localScale = new Vector3(1.03f, 1.03f, 1f);
+        transform.localScale = new Vector3(1.02f, 1.02f, 1f);
     }
 }

@@ -26,7 +26,9 @@ public class DisplayItemsStatsManager : MonoBehaviour
 
     [Header("Display Artifacts")]
     [SerializeField] TabGroup TabGroup;
-    private ItemButton selectedItemButton, previousselectedItemButton;
+    private Item SelectedItem;
+    private ItemButton currentItemButton, previousselectedItemButton;
+    private List<ItemButton> itembuttonlist = new();
 
     // Start is called before the first frame update
     void Start()
@@ -37,6 +39,9 @@ public class DisplayItemsStatsManager : MonoBehaviour
         DetailsPanel.SetActive(false);
     }
 
+    private void Update()
+    {
+    }
     void SetCurrentBackground(Rarity rarity)
     {
         for (int i = 0; i < Backgrounds.Length; i++)
@@ -50,13 +55,11 @@ public class DisplayItemsStatsManager : MonoBehaviour
     // Update is called once per frame
     void DisplaySelectedItem()
     {
-        if (selectedItemButton != null)
+        if (SelectedItem != null)
         {
-            LockButton.SetItemREF(selectedItemButton.GetItemREF());
-            UpgradeButton.GetComponent<UpgradeCanvasTransition>().SetItemButtonREF(selectedItemButton);
-            ItemContentDisplay.RefreshItemContentDisplay(selectedItemButton.GetItemREF());
-
-            SetCurrentBackground(selectedItemButton.GetItemREF().GetRarity());
+            LockButton.SetItemREF(SelectedItem);
+            ItemContentDisplay.RefreshItemContentDisplay(SelectedItem);
+            SetCurrentBackground(SelectedItem.GetRarity());
         }
     }
 
@@ -65,17 +68,26 @@ public class DisplayItemsStatsManager : MonoBehaviour
         ScrollRect.content = TabGroup.GetCurrentTabPanel().TabPanel.GetComponent<RectTransform>();
     }
 
+    private ItemButton GetItemButton(Item item)
+    {
+        foreach(ItemButton itemButton in itembuttonlist)
+        {
+            if (itemButton.GetItemREF() == item)
+                return itemButton;
+        }
+
+        return null;
+    }
 
     private void OnInventoryListChanged()
     {
-        for (int i = 0; i < TabGroup.GetTabMenuList().Length; i++)
+
+        foreach (ItemButton itemButton in itembuttonlist)
         {
-            foreach (ItemButton itemButton in TabGroup.GetTabMenuList()[i].TabPanel.GetComponentsInChildren<ItemButton>())
-            {
-                itemButton.onButtonClick -= GetItemSelected;
-                Destroy(itemButton.gameObject);
-            }
+            itemButton.onButtonClick -= GetItemSelected;
+            Destroy(itemButton.gameObject);
         }
+        itembuttonlist.Clear();
 
         for (int i = 0; i < CharacterManager.GetInstance().GetPlayerStats().GetINVList().Count; i++)
         {
@@ -92,30 +104,37 @@ public class DisplayItemsStatsManager : MonoBehaviour
                     break;
             }
             itemButton.onButtonClick += GetItemSelected;
+            itembuttonlist.Add(itemButton);
         }
+
+        UpdateOutlineSelection();
     }
 
     private void GetItemSelected(ItemButton itemButton)
     {
-        previousselectedItemButton = selectedItemButton;
-        selectedItemButton = itemButton;
-        AssetManager.GetInstance().UpdateCurrentSelectionOutline(previousselectedItemButton, selectedItemButton);
-        SelectedItemImage.sprite = selectedItemButton.GetItemREF().GetItemSprite();
+        SelectedItem = itemButton.GetItemREF();
+        UpdateOutlineSelection();
 
-        if (selectedItemButton == null)
+        DetailsPanel.SetActive(SelectedItem != null);
+
+        if (SelectedItem == null)
             return;
 
-
-        DetailsPanel.SetActive(selectedItemButton.GetItemREF() != null);
+        SelectedItemImage.sprite = SelectedItem.GetItemSprite();
 
         DisplaySelectedItem();
     }
 
     public Item GetItemCurrentSelected()
     {
-        if (selectedItemButton == null)
-            return null;
+        return SelectedItem;
+    }
 
-        return selectedItemButton.GetItemREF();
+    private void UpdateOutlineSelection()
+    {
+        previousselectedItemButton = currentItemButton;
+        currentItemButton = GetItemButton(SelectedItem);
+        UpgradeButton.GetComponent<UpgradeCanvasTransition>().SetItemButtonREF(currentItemButton);
+        AssetManager.GetInstance().UpdateCurrentSelectionOutline(previousselectedItemButton, currentItemButton);
     }
 }

@@ -16,6 +16,7 @@ public class UpgradeCanvasTransition : MonoBehaviour, IPointerClickHandler
 
     void SpawnUI()
     {
+        Debug.Log(ItemButtonREF);
         if (ItemButtonREF == null)
             return;
         else

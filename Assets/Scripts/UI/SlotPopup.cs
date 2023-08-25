@@ -37,6 +37,7 @@ public class SlotPopup : MonoBehaviour
     public void OnInventoryListChanged()
     {
         HideItem(null, true);
+        selectedItemButton = null;
 
         for (int i = 0; i < CharacterManager.GetInstance().GetPlayerStats().GetINVList().Count; i++)
         {
