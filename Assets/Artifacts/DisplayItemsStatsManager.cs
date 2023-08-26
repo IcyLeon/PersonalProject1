@@ -27,7 +27,7 @@ public class DisplayItemsStatsManager : MonoBehaviour
     [Header("Display Artifacts")]
     [SerializeField] TabGroup TabGroup;
     private Item SelectedItem;
-    private ItemButton currentItemButton, previousselectedItemButton;
+    private ItemButton SelectedItemButton;
     private List<ItemButton> itembuttonlist = new();
 
     // Start is called before the first frame update
@@ -132,9 +132,12 @@ public class DisplayItemsStatsManager : MonoBehaviour
 
     private void UpdateOutlineSelection()
     {
-        previousselectedItemButton = currentItemButton;
-        currentItemButton = GetItemButton(SelectedItem);
-        UpgradeButton.GetComponent<UpgradeCanvasTransition>().SetItemButtonREF(currentItemButton);
-        AssetManager.GetInstance().UpdateCurrentSelectionOutline(previousselectedItemButton, currentItemButton);
+        foreach (ItemButton itemButton in itembuttonlist)
+        {
+            AssetManager.GetInstance().UpdateCurrentSelectionOutline(itemButton, null);
+        }
+        SelectedItemButton = GetItemButton(SelectedItem);
+        UpgradeButton.GetComponent<UpgradeCanvasTransition>().SetItemButtonREF(SelectedItemButton);
+        AssetManager.GetInstance().UpdateCurrentSelectionOutline(null, SelectedItemButton);
     }
 }

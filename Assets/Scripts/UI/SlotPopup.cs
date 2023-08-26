@@ -21,8 +21,7 @@ public class SlotPopup : MonoBehaviour
     public event EventHandler<SendSlotInfo> onSlotSend, onSlotItemRemove;
     [SerializeField] bool AllowDragnDrop;
     private Slot SlotREF;
-    private ItemButton selectedItemButton, previousselectedItemButton;
-
+    private List<ItemButton> itembuttonlist = new();
     // Update is called once per frame
     void Start()
     {
@@ -30,14 +29,9 @@ public class SlotPopup : MonoBehaviour
         OnInventoryListChanged();
     }
 
-    public ItemContentManager GetItemInfoContent()
-    {
-        return ItemInfoContent;
-    }
     public void OnInventoryListChanged()
     {
         HideItem(null, true);
-        selectedItemButton = null;
 
         for (int i = 0; i < CharacterManager.GetInstance().GetPlayerStats().GetINVList().Count; i++)
         {
@@ -57,6 +51,7 @@ public class SlotPopup : MonoBehaviour
                 dragnDrop.onDragEvent += OnDrag;
                 dragnDrop.onEndDragEvent += OnEndDrag;
             }
+            itembuttonlist.Add(itemButton);
         }
     }
     private void OnItemSpawned(ItemButton itemButton)
@@ -106,10 +101,10 @@ public class SlotPopup : MonoBehaviour
                     dragnDrop.onDragEvent -= OnDrag;
                     dragnDrop.onEndDragEvent -= OnEndDrag;
                 }
+                itembuttonlist.Remove(itemButton);
                 Destroy(itemButton.gameObject);
             }
         }
-
     }
 
     public ItemButton GetItemButton(Item item)
@@ -127,17 +122,19 @@ public class SlotPopup : MonoBehaviour
 
     private void OnItemRemove(ItemButton itemButton)
     {
+        ItemInfoContent.TogglePopup(false);
         if (SlotREF == null)
             return;
 
+        AssetManager.GetInstance().UpdateCurrentSelectionOutline(itemButton, null);
         onSlotItemRemove?.Invoke(this, new SendSlotInfo { slot = SlotREF, itemButtonREF = itemButton });
     }
 
     private void GetItemSelected(ItemButton itemButton)
     {
-        previousselectedItemButton = selectedItemButton;
-        selectedItemButton = itemButton;
-        AssetManager.GetInstance().UpdateCurrentSelectionOutline(previousselectedItemButton, selectedItemButton);
+        ItemInfoContent.TogglePopup(true);
+        ItemInfoContent.SetItemButtonREF(itemButton);
+        UpdateOutlineSelection(itemButton);
 
         if (SlotREF == null)
             return;
@@ -162,15 +159,20 @@ public class SlotPopup : MonoBehaviour
         if (SlotREF.GetItemButton())
         {
             ItemInfoContent.SetItemButtonREF(SlotREF.GetItemButton());
-            previousselectedItemButton = selectedItemButton;
-            selectedItemButton = GetItemButton(SlotREF.GetItemButton().GetItemREF());
-
-            AssetManager.GetInstance().UpdateCurrentSelectionOutline(previousselectedItemButton, selectedItemButton);
-
+            UpdateOutlineSelection(GetItemButton(SlotREF.GetItemButton().GetItemREF()));
             ItemInfoContent.TogglePopup(true);
         }
-
         TogglePopup(true);
+    }
+
+    private void UpdateOutlineSelection(ItemButton selecteditemButton)
+    {
+        foreach (ItemButton itemButton in itembuttonlist)
+        {
+            AssetManager.GetInstance().UpdateCurrentSelectionOutline(itemButton, null);
+        }
+
+        AssetManager.GetInstance().UpdateCurrentSelectionOutline(null, selecteditemButton);
     }
 
     private void TogglePopup(bool active)

@@ -34,8 +34,6 @@ public class EnhancementManager : MonoBehaviour
     private float UpgradeElasped;
     private float smoothDampVelocity;
 
-
-    private Slot selectedSlot, previousselectedSlot;
     // Start is called before the first frame update
     void Start()
     {
@@ -182,7 +180,7 @@ public class EnhancementManager : MonoBehaviour
         {
             Slot slot = EnhancementItemList[i].GetComponent<Slot>();
             upgradeArtifactCanvas.SlotPopup.UnSubscribeSlot(slot);
-            slot.onSlotClick -= GetSlotSelected;
+            slot.onSlotClick -= RemoveSelfItemButton;
             slot.SlotItemButtonChanged -= OnSlotItemButtonChanged;
             Destroy(EnhancementItemList[i].gameObject);
         }
@@ -192,7 +190,7 @@ public class EnhancementManager : MonoBehaviour
             GameObject enhancementitemslot = Instantiate(AssetManager.GetInstance().SlotPrefab, SlotsParent);
             Slot slot = enhancementitemslot.GetComponent<Slot>();
             upgradeArtifactCanvas.SlotPopup.SubscribeSlot(slot);
-            slot.onSlotClick += GetSlotSelected;
+            slot.onSlotClick += RemoveSelfItemButton;
             slot.SlotItemButtonChanged += OnSlotItemButtonChanged;
             EnhancementItemList.Add(enhancementitemslot);
         }
@@ -205,6 +203,11 @@ public class EnhancementManager : MonoBehaviour
         if (sendslotInfo.slot)
         {
             ItemButton SlotPopupitemButton = upgradeArtifactCanvas.SlotPopup.GetItemButton(sendslotInfo.itemButtonREF.GetItemREF());
+            for (int i = 0; i < EnhancementItemList.Count; i++)
+            {
+                Slot slot = EnhancementItemList[i].GetComponent<Slot>();
+                AssetManager.GetInstance().UpdateCurrentSelectionOutline(slot, null);
+            }
 
             if (!SlotPopupitemButton)
                 return;
@@ -213,23 +216,26 @@ public class EnhancementManager : MonoBehaviour
         }
     }
 
-    private void GetSlotSelected(Slot slot) // remove the item that we want to upgrade from the Popup UI, slot is a dummy code
+    private void RemoveSelfItemButton(Slot selectedSlot)
     {
-        previousselectedSlot = selectedSlot;
-        selectedSlot = slot;
-        AssetManager.GetInstance().UpdateCurrentSelectionOutline(previousselectedSlot, selectedSlot);
+        for (int i = 0; i < EnhancementItemList.Count; i++)
+        {
+            Slot slot = EnhancementItemList[i].GetComponent<Slot>();
+            AssetManager.GetInstance().UpdateCurrentSelectionOutline(slot, null);
+        }
+        AssetManager.GetInstance().UpdateCurrentSelectionOutline(null, selectedSlot);
 
         upgradeArtifactCanvas.SlotPopup.HideItem(GetItemREF());
     }
     private void OnInventoryListChanged()
     {
-        GetSlotSelected(null);
+        ClearAll();
+        RemoveSelfItemButton(null);
     }
 
     private void ManualRemoveItems(object sender, SendSlotInfo e)
     {
         ItemButton ExistitemButton = CheckIfItemalreadyExist(e.itemButtonREF.GetItemREF());
-        upgradeArtifactCanvas.SlotPopup.GetItemInfoContent().TogglePopup(false);
 
         if (ExistitemButton != null)
             GetSlotAt(ExistitemButton).SetItemButton(null);
@@ -248,8 +254,6 @@ public class EnhancementManager : MonoBehaviour
     private void ManualAddItems(object sender, SendSlotInfo e)
     {
         ItemButton ExistitemButton = CheckIfItemalreadyExist(e.itemButtonREF.GetItemREF());
-        upgradeArtifactCanvas.SlotPopup.GetItemInfoContent().TogglePopup(true);
-        upgradeArtifactCanvas.SlotPopup.GetItemInfoContent().SetItemButtonREF(e.itemButtonREF);
 
         if (ExistitemButton == null)
         {

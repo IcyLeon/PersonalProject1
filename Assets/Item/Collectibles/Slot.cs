@@ -9,7 +9,7 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IP
 {
     [SerializeField] GameObject slotItemButtonPrefab;
     [SerializeField] GameObject ContentContainer;
-    [SerializeField] Image Outline;
+    [SerializeField] Image OutlineAnimation, Outline;
     private ItemButton itembutton;
 
     public delegate void SendSlotClick(Slot slot);
@@ -55,6 +55,15 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IP
         itemButton.DisableNewImage();
     }
 
+    private void Update()
+    {
+        if (OutlineAnimation.gameObject.activeSelf)
+        {
+            transform.localScale = new Vector3(1.02f, 1.02f, 1f);
+            Outline.gameObject.SetActive(true);
+        }
+    }
+
     public ItemButton GetItemButton()
     {
         return itembutton;
@@ -74,6 +83,7 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IP
     public void OnPointerExit(PointerEventData eventData)
     {
         transform.localScale = Vector3.one;
+        Outline.gameObject.SetActive(false);
     }
 
     public void OnDrop(PointerEventData eventData)
@@ -88,12 +98,17 @@ public class Slot : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IP
     public void OnPointerEnter(PointerEventData eventData)
     {
         transform.localScale = new Vector3(1.02f, 1.02f, 1f);
+        Outline.gameObject.SetActive(true);
     }
 
     void IToggle.ToggleSelection(bool toggle)
     {
+        OutlineAnimation.gameObject.SetActive(toggle);
         Outline.gameObject.SetActive(toggle);
+
         if (!toggle)
+        {
             transform.localScale = Vector3.one;
+        }
     }
 }

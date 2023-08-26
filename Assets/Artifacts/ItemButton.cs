@@ -19,8 +19,9 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
     public event SendItemButtonInfo onButtonRemoveClick;
     public event SendItemButtonInfo onButtonSpawn;
 
-    [SerializeField] Image Outline;
+    [SerializeField] Image OutlineAnimation, Outline;
     [SerializeField] Button RemoveImage;
+    [SerializeField] GameObject RemoveGO;
     [SerializeField] Image ItemImage;
     [SerializeField] Image NewImage;
     [SerializeField] LockItem lockItem;
@@ -104,13 +105,16 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
     {
         UpdateHideLock();
 
-        if (Outline.gameObject.activeSelf)
+        if (OutlineAnimation.gameObject.activeSelf)
+        {
             transform.localScale = new Vector3(1.02f, 1.02f, 1f);
+            Outline.gameObject.SetActive(true);
+        }
     }
 
     public void ToggleRemoveItemImage(bool input)
     {
-        RemoveImage.gameObject.SetActive(input);
+        RemoveGO.SetActive(input);
     }
 
     private void UpdateHideLock()
@@ -160,9 +164,13 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
 
     void IToggle.ToggleSelection(bool toggle)
     {
+        OutlineAnimation.gameObject.SetActive(toggle);
         Outline.gameObject.SetActive(toggle);
+
         if (!toggle)
+        {
             transform.localScale = Vector3.one;
+        }
     }
 
     public void SetItemREF(Item item)
@@ -197,6 +205,7 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
     public void OnPointerExit(PointerEventData eventData)
     {
         transform.localScale = Vector3.one;
+        Outline.gameObject.SetActive(false);
     }
 
     private void OnDestroy()
@@ -211,5 +220,6 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
     public void OnPointerEnter(PointerEventData eventData)
     {
         transform.localScale = new Vector3(1.02f, 1.02f, 1f);
+        Outline.gameObject.SetActive(true);
     }
 }
