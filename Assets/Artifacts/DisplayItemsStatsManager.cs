@@ -25,7 +25,7 @@ public class DisplayItemsStatsManager : MonoBehaviour
     [SerializeField] ItemContentDisplay ItemContentDisplay;
 
     [Header("Display Artifacts")]
-    [SerializeField] TabGroup TabGroup;
+    [SerializeField] ArtifactTabGroup TabGroup;
     private Item SelectedItem;
     private ItemButton SelectedItemButton;
     private List<ItemButton> itembuttonlist = new();
@@ -39,9 +39,6 @@ public class DisplayItemsStatsManager : MonoBehaviour
         DetailsPanel.SetActive(false);
     }
 
-    private void Update()
-    {
-    }
     void SetCurrentBackground(Rarity rarity)
     {
         for (int i = 0; i < Backgrounds.Length; i++)
