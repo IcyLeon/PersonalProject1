@@ -6,6 +6,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEngine.ParticleSystem;
 
 public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandler, IPointerExitHandler, IPointerEnterHandler, IToggle
 {
@@ -26,6 +27,7 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
     [SerializeField] Image NewImage;
     [SerializeField] LockItem lockItem;
     [SerializeField] CanvasGroup canvasGroup;
+    [SerializeField] ParticleSystem Burst;
 
     private RectTransform ItemButton_Rect;
     private ItemButton ItemButton_Drag;
@@ -197,7 +199,8 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
                 DisableNewImage();
             }
         }
-
+        Burst.gameObject.SetActive(true);
+        Burst.Emit(1);
         onButtonClick?.Invoke(this);
         transform.localScale = Vector3.one;
     }

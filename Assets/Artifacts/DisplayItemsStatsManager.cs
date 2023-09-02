@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static PlayerStats;
+using static UnityEngine.ParticleSystem;
 
 public class DisplayItemsStatsManager : MonoBehaviour
 {
@@ -23,10 +24,11 @@ public class DisplayItemsStatsManager : MonoBehaviour
     [SerializeField] GameObject UpgradeButton;
     [SerializeField] Image SelectedItemImage;
     [SerializeField] ItemContentDisplay ItemContentDisplay;
+    [SerializeField] ParticleSystem burst;
 
     [Header("Display Artifacts")]
     [SerializeField] ArtifactTabGroup TabGroup;
-    private Item SelectedItem;
+    private Item SelectedItem, PreviousSelectedItem;
     private ItemButton SelectedItemButton;
     private List<ItemButton> itembuttonlist = new();
 
@@ -109,6 +111,7 @@ public class DisplayItemsStatsManager : MonoBehaviour
 
     private void GetItemSelected(ItemButton itemButton)
     {
+        PreviousSelectedItem = SelectedItem;
         SelectedItem = itemButton.GetItemREF();
         UpdateOutlineSelection();
 
@@ -118,6 +121,10 @@ public class DisplayItemsStatsManager : MonoBehaviour
             return;
 
         SelectedItemImage.sprite = SelectedItem.GetItemSprite();
+        if (SelectedItem != PreviousSelectedItem)
+        {
+            burst.Emit(1);
+        }
 
         DisplaySelectedItem();
     }
