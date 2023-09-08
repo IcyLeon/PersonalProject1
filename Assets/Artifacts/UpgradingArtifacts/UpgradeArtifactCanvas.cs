@@ -12,6 +12,7 @@ public class UpgradeArtifactCanvas : MonoBehaviour
     [SerializeField] TextMeshProUGUI UpgradeItemsType;
     [SerializeField] SlotPopup slotPopup;
     [SerializeField] ItemContentManager ItemContentManager;
+    [SerializeField] EnhancementManager EnhancementManager;
     private ItemButton ItemButtonREF;
     private Item itemREF;
 
@@ -36,6 +37,7 @@ public class UpgradeArtifactCanvas : MonoBehaviour
             return;
 
         gameObject.SetActive(true);
+        EnhancementManager.SetExpDisplay();
         UpgradeItemsType.text = GetItemREF().GetItemType() + " / " + GetItemREF().GetItemName();
         ItemContentManager.SetItemButtonREF(ItemButtonREF);
         slotPopup.OnInventoryListChanged();

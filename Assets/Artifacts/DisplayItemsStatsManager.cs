@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static PlayerStats;
-using static UnityEngine.ParticleSystem;
 
 public class DisplayItemsStatsManager : MonoBehaviour
 {

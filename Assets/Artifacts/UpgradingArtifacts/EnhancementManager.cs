@@ -8,31 +8,34 @@ using UnityEditor.Experimental;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static PlayerStats;
+
 
 public class EnhancementManager : MonoBehaviour
 {
+    [SerializeField] GameObject MaxLevelContent;
+    [SerializeField] GameObject EnhancementContent;
+
     [Header("Enhancement Infomation")]
     [SerializeField] int EnhancementItemToSell;
-    [SerializeField] float ScoreUpgradepts;
     [SerializeField] UpgradeArtifactCanvas upgradeArtifactCanvas;
     [SerializeField] Image selectedItemImage;
-    [SerializeField] TextMeshProUGUI LevelDisplay, ExpAmountDisplay;
+    [SerializeField] TextMeshProUGUI LevelDisplay, ExpAmountDisplay, IncreaseAmountExpDisplay, IncreaseLevelDisplay;
     [SerializeField] Button AutoAddBtn;
     [SerializeField] Button UpgradeBtn;
     [SerializeField] Button ClearAllBtn;
-    [SerializeField] Slider upgradeprogressslider;
+    [SerializeField] Slider upgradeProgressSlider, previewProgressSlider;
     [SerializeField] TMP_Dropdown AutoAddSelection;
     [SerializeField] ItemsList itemList;
     [SerializeField] Transform SlotsParent;
     List<GameObject> EnhancementItemList = new List<GameObject>();
     private int NoofItemsAdded;
     private int RaritySelection;
+    private int[] CostList;
+    private float PreviewUpgradeEXP;
+    private bool UpgradinginProgress = false;
 
     [Header("Artifacts Stats")]
     [SerializeField] GameObject[] ArtifactsStatsContainer;
-    private float UpgradeElasped;
-    private float smoothDampVelocity;
 
     // Start is called before the first frame update
     void Start()
@@ -50,9 +53,19 @@ public class EnhancementManager : MonoBehaviour
         }
         );
 
+    }
 
-        int[] CostList = itemList.GetCostListStatus(GetItemREF().GetRarity());
-        SetProgressUpgrades(0, CostList[0]);
+    public void SetExpDisplay()
+    {
+        UpgradableItems UpgradableItemREF = GetItemREF() as UpgradableItems;
+
+        CostList = itemList.GetCostListStatus(GetItemREF().GetRarity());
+        if (UpgradableItemREF.GetLevel() < CostList.Length)
+            SetProgressUpgrades(0, CostList[UpgradableItemREF.GetLevel()]);
+        else
+            SetProgressUpgrades(0, 0);
+
+        upgradeProgressSlider.value = UpgradableItemREF.GetExpAmount();
     }
 
     private void Update()
@@ -65,7 +78,10 @@ public class EnhancementManager : MonoBehaviour
                 slot.SetItemButton(null);
             }
         }
-        UpdateContent();
+
+        UpdatePreviewEXP();
+        if (!UpgradinginProgress)
+            UpdateContent();
     }
 
     public Item GetItemREF()
@@ -122,6 +138,35 @@ public class EnhancementManager : MonoBehaviour
         return null;
     }
 
+    private int GetLevelIncrease()
+    {
+        UpgradableItems UpgradableItemREF = GetItemREF() as UpgradableItems;
+        int increaseLevel = 0;
+        float current = PreviewUpgradeEXP;
+
+        for (int i = 0; i < CostList.Length; i++)
+        {
+            if (i >= UpgradableItemREF.GetLevel())
+            {
+                if (current < CostList[i])
+                    break;
+
+                current -= CostList[i];
+                increaseLevel++;
+            }
+        }
+        return increaseLevel;
+    }
+
+    private void UpdatePreviewEXP()
+    {
+        UpgradableItems UpgradableItemREF = GetItemREF() as UpgradableItems;
+        PreviewUpgradeEXP = UpgradableItemREF.GetExpAmount() + GetTotalEXP();
+        previewProgressSlider.minValue = upgradeProgressSlider.minValue;
+        previewProgressSlider.maxValue = upgradeProgressSlider.maxValue;
+        previewProgressSlider.value = PreviewUpgradeEXP;
+    }
+
     private void UpdateContent()
     {
         ClearAllBtn.gameObject.SetActive(GetNoofSlotsTaken() != 0);
@@ -130,8 +175,17 @@ public class EnhancementManager : MonoBehaviour
         {
             UpgradableItems UpgradableItemREF = GetItemREF() as UpgradableItems;
             selectedItemImage.sprite = UpgradableItemREF.GetItemSprite();
-            LevelDisplay.text = "+" + UpgradableItemREF.GetLevel().ToString();
-            ExpAmountDisplay.text = ((int)upgradeprogressslider.value).ToString() + "/" + upgradeprogressslider.maxValue.ToString();
+            LevelDisplay.text = "+" + UpgradableItemREF.GetLevel();
+            ExpAmountDisplay.text = Mathf.RoundToInt(upgradeProgressSlider.value) + "/" + upgradeProgressSlider.maxValue.ToString();
+
+            IncreaseAmountExpDisplay.text = "+" + ((int)GetTotalEXP());
+            IncreaseAmountExpDisplay.gameObject.SetActive(GetNoofSlotsTaken() != 0);
+
+            IncreaseLevelDisplay.text = "+" + GetLevelIncrease();
+            IncreaseLevelDisplay.gameObject.SetActive(GetLevelIncrease() != 0);
+
+            MaxLevelContent.SetActive(UpgradableItemREF.GetLevel() == CostList.Length);
+            EnhancementContent.SetActive(UpgradableItemREF.GetLevel() < CostList.Length);
 
             Artifacts selectedartifacts = UpgradableItemREF as Artifacts;
             for (int i = 0; i < ArtifactsStatsContainer.Length; i++)
@@ -202,6 +256,9 @@ public class EnhancementManager : MonoBehaviour
     {
         if (sendslotInfo.slot)
         {
+            if (!sendslotInfo.itemButtonREF)
+                return;
+
             ItemButton SlotPopupitemButton = upgradeArtifactCanvas.SlotPopup.GetItemButton(sendslotInfo.itemButtonREF.GetItemREF());
             for (int i = 0; i < EnhancementItemList.Count; i++)
             {
@@ -279,50 +336,92 @@ public class EnhancementManager : MonoBehaviour
     }
    
 
-    IEnumerator UpgradeProgress()
+    private IEnumerator UpgradeProgress()
     {
+        float smoothTime = 2f;
+        float UpgradeElasped = 0;
         UpgradableItems UpgradableItemREF = GetItemREF() as UpgradableItems;
-        int[] CostList = itemList.GetCostListStatus(GetItemREF().GetRarity());
 
         while (GetItemREF() != null)
         {
-            if (UpgradableItemREF.GetLevel() < CostList.Length)
+            UpgradinginProgress = true;
+            if (UpgradableItemREF.GetLevel() <= CostList.Length)
             {
-                float threshold = 1f;
-                if (Mathf.Abs(upgradeprogressslider.value - upgradeprogressslider.maxValue) < threshold)
+                if (Mathf.Approximately(upgradeProgressSlider.value, upgradeProgressSlider.maxValue))
                 {
                     if ((UpgradableItemREF.GetLevel() + 1) < CostList.Length)
                     {
-                        SetProgressUpgrades(CostList[UpgradableItemREF.GetLevel()], CostList[UpgradableItemREF.GetLevel() + 1]);
-                        //upgradeprogressslider.value = upgradeprogressslider.minValue;
+                        UpgradableItemREF.SetExpAmount(UpgradableItemREF.GetExpAmount() - upgradeProgressSlider.maxValue);
+                        SetProgressUpgrades(0, CostList[UpgradableItemREF.GetLevel() + 1]);
                     }
+                    else
+                    {
+                        SetProgressUpgrades(0, 0);
+                    }
+
+                    upgradeProgressSlider.value = upgradeProgressSlider.minValue;
                     UpgradableItemREF.Upgrade();
                 }
             }
 
-            float smoothTime = 0.2f;
-            float maxSpeed = Mathf.Infinity;
-            upgradeprogressslider.value = Mathf.SmoothDamp(upgradeprogressslider.value, ScoreUpgradepts, ref smoothDampVelocity, smoothTime, maxSpeed, Time.deltaTime);
+            if (!Mathf.Approximately(upgradeProgressSlider.value, UpgradableItemREF.GetExpAmount()))
+                upgradeProgressSlider.value = Mathf.Lerp(upgradeProgressSlider.value, UpgradableItemREF.GetExpAmount(), UpgradeElasped / smoothTime);
+            else
+                break;
+
+            UpgradeElasped += Time.deltaTime;
             yield return null;
         }
+
+        UpgradinginProgress = false;
+        Debug.Log("Enhanced Completed");
     }
 
-    void SetProgressUpgrades(float min, float max)
+    private void SetProgressUpgrades(float min, float max)
     {
-        upgradeprogressslider.minValue = min;
-        upgradeprogressslider.maxValue = max;
+        upgradeProgressSlider.minValue = min;
+        upgradeProgressSlider.maxValue = max;
     }
 
+    private float GetTotalEXP()
+    {
+        float total = 0;
+
+        for (int i = 0; i < GetEnhancementItemList().Count; i++)
+        {
+            Slot slot = GetEnhancementItemList()[i].GetComponent<Slot>();
+            if (slot.GetItemButton() != null)
+            {
+                switch(slot.GetItemButton().GetItemREF().GetRarity())
+                {
+                    case Rarity.ThreeStar: // hardcode for now
+                        total += 500f;
+                        break;
+                    case Rarity.FourStar:
+                        total += 1000f;
+                        break;
+                    case Rarity.FiveStar:
+                        total += 2500f;
+                        break;
+                }
+            }
+        }
+
+        return total;
+    }
     public void EnhanceUpgrade()
     {
-        ScoreUpgradepts += 500;
-        UpgradeElasped = 0;
-        StartCoroutine(UpgradeProgress());
+        if (GetItemREF() != null)
+        {
+            UpgradableItems UpgradableItemREF = GetItemREF() as UpgradableItems;
+            UpgradableItemREF.SetExpAmount(PreviewUpgradeEXP);
+            StartCoroutine(UpgradeProgress());
+        }
     }
 
     private void AutoAdd()
     {
-        StartCoroutine(GetRandomItemButton(CharacterManager.GetInstance().GetPlayerStats().GetINVList()));
+        StartCoroutine(GetRandomsItemButton(CharacterManager.GetInstance().GetPlayerStats().GetINVList()));
 
         if (NoofItemsAdded <= 0 && FindAvailableSlot())
             AssetManager.GetInstance().OpenPopupPanel("No Consumable Found");
@@ -360,7 +459,7 @@ public class EnhancementManager : MonoBehaviour
         }
     }
 
-    private IEnumerator GetRandomItemButton(List<Item> itemlistREF)
+    private IEnumerator GetRandomsItemButton(List<Item> itemlistREF)
     {
         List<Item> itemsList = new List<Item>(itemlistREF);
         itemsList.RemoveAll(item => item.GetCategory != GetItemREF().GetCategory || (int)item.GetRarity() > RaritySelection);
