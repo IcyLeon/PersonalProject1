@@ -7,6 +7,7 @@ using UnityEngine;
 public abstract class ConsumableItem : Item
 {
     protected int amount;
+    public event Action onValueChanged;
 
     public override string GetItemType()
     {
@@ -30,7 +31,6 @@ public abstract class ConsumableItem : Item
     }
     public void AddAmount(int amountAdd = 1)
     {
-
         amount += amountAdd;
         OverflowManager();
     }
@@ -38,6 +38,7 @@ public abstract class ConsumableItem : Item
     protected void OverflowManager()
     {
         amount = Mathf.Clamp(amount, 0, 1000);
+        onValueChanged?.Invoke();
     }
 
     public ConsumableItem() : base()

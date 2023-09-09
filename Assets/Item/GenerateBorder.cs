@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class GenerateBorder : MonoBehaviour
 {
     private Image[] StarDisplayList;
-    [SerializeField] ItemsList itemlisttemplate;
     [SerializeField] Image Background;
     [SerializeField] GameObject StarDisplayContainer;
     [SerializeField] ItemButton itemButton;
@@ -55,10 +54,7 @@ public class GenerateBorder : MonoBehaviour
         }
     }
 
-    public ItemsList GetItemListTemplate()
-    {
-        return itemlisttemplate;
-    }
+
     public void SetDisplayStars(Rarity rarity)
     {
         for (int i = 0; i < StarDisplayList.Length; i++)
@@ -72,6 +68,6 @@ public class GenerateBorder : MonoBehaviour
                 StarDisplayList[i].gameObject.SetActive(false);
             }
         }
-        Background.sprite = itemlisttemplate.raritylist[(int)rarity].rarityborderimage;
+        Background.sprite = AssetManager.GetInstance().GetItemListTemplate().raritylist[(int)rarity].rarityborderimage;
     }
 }

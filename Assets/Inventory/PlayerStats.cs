@@ -11,8 +11,7 @@ public class PlayerStats
     private int mora;
     List<Item> InventoryList;
 
-    public delegate void InventoryListChanged();
-    public event InventoryListChanged onInventoryListChanged;
+    public event Action onInventoryListChanged;
 
     public int Mora
     {

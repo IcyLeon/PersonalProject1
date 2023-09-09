@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,6 +12,7 @@ public enum Category
 
 public abstract class Item {
     private bool FirstCreate;
+
     public bool isNew
     {
         get { return FirstCreate; }
@@ -24,7 +26,7 @@ public abstract class Item {
         set { category = value; }
     }
 
-    public ItemTemplate item
+    protected ItemTemplate item
     {
         get { return itemScriptableObject; }
         set { itemScriptableObject = value; }

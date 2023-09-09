@@ -11,8 +11,10 @@ public class DisplayItemsStatsManager : MonoBehaviour
     public struct Background
     {
         public GameObject BackgroundGO;
+        public Color ParticlesColor;
         public Rarity Rarity;
     }
+    [SerializeField] ParticleSystem fog;
     [SerializeField] Background[] Backgrounds;
 
     [Header("Display Upgradable in Inventory")]
@@ -39,13 +41,33 @@ public class DisplayItemsStatsManager : MonoBehaviour
         DetailsPanel.SetActive(false);
     }
 
+
+    private void ChangeParticleColor(Color color)
+    {
+        ParticleSystem.Particle[] particles = new ParticleSystem.Particle[fog.particleCount];
+        int numParticles = fog.GetParticles(particles);
+
+        for (int i = 0; i < numParticles; i++)
+        {
+            particles[i].startColor = color;
+        }
+
+        fog.SetParticles(particles, numParticles);
+
+        var fogMain = fog.main;
+        fogMain.startColor = color;
+    }
+
     void SetCurrentBackground(Rarity rarity)
     {
         for (int i = 0; i < Backgrounds.Length; i++)
         {
             Backgrounds[i].BackgroundGO.SetActive(false);
             if (Backgrounds[i].Rarity == rarity)
+            {
                 Backgrounds[i].BackgroundGO.SetActive(true);
+                ChangeParticleColor(Backgrounds[i].ParticlesColor);
+            }
         }
     }
 
@@ -88,9 +110,13 @@ public class DisplayItemsStatsManager : MonoBehaviour
 
         for (int i = 0; i < CharacterManager.GetInstance().GetPlayerStats().GetINVList().Count; i++)
         {
+            Item item = CharacterManager.GetInstance().GetPlayerStats().GetINVList()[i];
+            if (item is not UpgradableItems)
+                continue;
+
             GameObject go = Instantiate(AssetManager.GetInstance().ItemBorderPrefab);
             ItemButton itemButton = go.GetComponent<ItemButton>();
-            itemButton.SetItemREF(CharacterManager.GetInstance().GetPlayerStats().GetINVList()[i]);
+            itemButton.SetItemREF(item);
 
             UpgradableItems UpgradableItemREF = itemButton.GetItemREF() as UpgradableItems;
             switch (UpgradableItemREF.GetCategory)
@@ -101,6 +127,7 @@ public class DisplayItemsStatsManager : MonoBehaviour
                     break;
             }
             itemButton.onButtonClick += GetItemSelected;
+            UpgradableItemREF.onLevelChanged += onItemUpgrade;
             itembuttonlist.Add(itemButton);
         }
 
@@ -127,6 +154,10 @@ public class DisplayItemsStatsManager : MonoBehaviour
         DisplaySelectedItem();
     }
 
+    private void onItemUpgrade()
+    {
+        DisplaySelectedItem();
+    }
     public Item GetItemCurrentSelected()
     {
         return SelectedItem;
@@ -139,7 +170,7 @@ public class DisplayItemsStatsManager : MonoBehaviour
             AssetManager.GetInstance().UpdateCurrentSelectionOutline(itemButton, null);
         }
         SelectedItemButton = GetItemButton(SelectedItem);
-        UpgradeButton.GetComponent<UpgradeCanvasTransition>().SetItemButtonREF(SelectedItemButton);
+        UpgradeButton.GetComponent<UpgradeCanvasTransition>().SetItemREF(SelectedItem);
         AssetManager.GetInstance().UpdateCurrentSelectionOutline(null, SelectedItemButton);
     }
 }

@@ -8,11 +8,13 @@ public abstract class UpgradableItems : Item
     protected int Level, MaxLevel;
     protected bool locked;
     protected float ExpAmount;
+    public event Action onLevelChanged;
 
     public virtual void Upgrade()
     {
         Level++;
         Level = Mathf.Clamp(Level, 0, MaxLevel);
+        onLevelChanged?.Invoke();
     }
 
     public int GetLevel()

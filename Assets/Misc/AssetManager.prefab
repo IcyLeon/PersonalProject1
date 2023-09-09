@@ -46,6 +46,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InfomationPanel: {fileID: 0}
   PopupPanel: {fileID: 0}
-  ItemBorderPrefab: {fileID: 5117009378638399214, guid: eaae2fd93d549274883a11e9ffce66e6, type: 3}
-  SlotPrefab: {fileID: 537154594175900035, guid: 04bec387e0da13642a751ac93a6748a2, type: 3}
+  itemlisttemplate: {fileID: 11400000, guid: fc5ef0a01831d8c42ae8b7b2e7075098, type: 2}
+  ItemBorderPrefab: {fileID: 5117009378638399214, guid: eaae2fd93d549274883a11e9ffce66e6,
+    type: 3}
+  SlotPrefab: {fileID: 537154594175900035, guid: 04bec387e0da13642a751ac93a6748a2,
+    type: 3}
   canvas: {fileID: 0}

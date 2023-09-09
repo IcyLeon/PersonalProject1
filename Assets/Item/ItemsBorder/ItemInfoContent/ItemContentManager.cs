@@ -11,34 +11,41 @@ public class ItemContentManager : MonoBehaviour
     [SerializeField] GameObject[] ItemContent;
     [SerializeField] ItemContentDisplay ItemContentDisplay;
     [SerializeField] LockItem LockButton;
-    private ItemButton ItemButtonREF;
-    public void SetItemButtonREF(ItemButton itembutton)
+    private Item ItemREF;
+    public void SetItemREF(Item item)
     {
-        ItemButtonREF = itembutton;
+        ItemREF = item;
+
+        UpgradableItems upgradableItems = ItemREF as UpgradableItems;
+        if (upgradableItems != null)
+        {
+            upgradableItems.onLevelChanged += onUpgradeLevelChanged;
+        }
         DisplayContent();
     }
 
+    private void onUpgradeLevelChanged()
+    {
+        DisplayContent();
+    }
     private void DisplayContent()
     {
-        if (!ItemButtonREF)
+        if (ItemREF == null)
             return;
-        else
-            if (ItemButtonREF.GetItemREF() == null)
-                return;
 
         foreach (GameObject go in ItemContent)
         {
             go.SetActive(false);
-            if (ItemButtonREF.GetItemREF() is UpgradableItems && go == ItemContent[0])
+            if (ItemREF is UpgradableItems && go == ItemContent[0])
                 ItemContent[0].SetActive(true);
-            else if (ItemButtonREF.GetItemREF() is ConsumableItem && go == ItemContent[1])
+            else if (ItemREF is ConsumableItem && go == ItemContent[1])
                 ItemContent[1].SetActive(true);
         }
 
-        ItemSprite.sprite = ItemButtonREF.GetItemREF().GetItemSprite();
-        ItemCardImage.sprite = ItemButtonREF.GetComponent<GenerateBorder>().GetItemListTemplate().raritylist[(int)ItemButtonREF.GetItemREF().GetRarity()].ItemCardImage;
-        ItemContentDisplay.RefreshItemContentDisplay(ItemButtonREF.GetItemREF());
-        LockButton.SetItemREF(ItemButtonREF.GetItemREF());
+        ItemSprite.sprite = ItemREF.GetItemSprite();
+        ItemCardImage.sprite = AssetManager.GetInstance().GetItemListTemplate().raritylist[(int)ItemREF.GetRarity()].ItemCardImage;
+        ItemContentDisplay.RefreshItemContentDisplay(ItemREF);
+        LockButton.SetItemREF(ItemREF);
     }
     public void TogglePopup(bool active)
     {

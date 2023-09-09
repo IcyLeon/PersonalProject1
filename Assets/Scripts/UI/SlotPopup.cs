@@ -133,7 +133,7 @@ public class SlotPopup : MonoBehaviour
     private void GetItemSelected(ItemButton itemButton)
     {
         ItemInfoContent.TogglePopup(true);
-        ItemInfoContent.SetItemButtonREF(itemButton);
+        ItemInfoContent.SetItemREF(itemButton.GetItemREF());
         UpdateOutlineSelection(itemButton);
 
         if (SlotREF == null)
@@ -158,7 +158,7 @@ public class SlotPopup : MonoBehaviour
 
         if (SlotREF.GetItemButton())
         {
-            ItemInfoContent.SetItemButtonREF(SlotREF.GetItemButton());
+            ItemInfoContent.SetItemREF(SlotREF.GetItemButton().GetItemREF());
             UpdateOutlineSelection(GetItemButton(SlotREF.GetItemButton().GetItemREF()));
             ItemInfoContent.TogglePopup(true);
         }

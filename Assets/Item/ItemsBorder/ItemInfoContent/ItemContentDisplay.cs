@@ -52,13 +52,8 @@ public class ItemContentDisplay : MonoBehaviour
             return;
 
         UpgradableItems UpgradableItemREF = SelectedItem as UpgradableItems;
+        ShowArtifactsItemContent((Artifacts)UpgradableItemREF);
 
-        switch (SelectedItem.GetCategory)
-        {
-            case Category.ARTIFACTS:
-                ShowArtifactsItemContent((Artifacts)UpgradableItemREF);
-                break;
-        }
 
 
         for (int i = 0; i < StarDisplayList.Length; i++)

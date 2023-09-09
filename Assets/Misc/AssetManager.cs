@@ -12,6 +12,7 @@ public class AssetManager : MonoBehaviour
 {
     [SerializeField] MessagePanel InfomationPanel;
     [SerializeField] PopupPanel PopupPanel;
+    [SerializeField] ItemsList itemlisttemplate;
     private GameObject DraggingItem;
     public GameObject ItemBorderPrefab;
     public GameObject SlotPrefab;
@@ -44,7 +45,10 @@ public class AssetManager : MonoBehaviour
     {
         //PopupPanel.SetMessage(text);
     }
-
+    public ItemsList GetItemListTemplate()
+    {
+        return itemlisttemplate;
+    }
     public void UpdateCurrentSelectionOutline(IToggle prev, IToggle current)
     {
         if (prev != null)

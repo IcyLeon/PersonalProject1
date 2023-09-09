@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UpgradeArtifactCanvas : MonoBehaviour
+public class UpgradeCanvas : MonoBehaviour
 {
     [Header("Upgradable Items")]
     [SerializeField] Image UpgradeItemsIcon;
@@ -13,7 +13,6 @@ public class UpgradeArtifactCanvas : MonoBehaviour
     [SerializeField] SlotPopup slotPopup;
     [SerializeField] ItemContentManager ItemContentManager;
     [SerializeField] EnhancementManager EnhancementManager;
-    private ItemButton ItemButtonREF;
     private Item itemREF;
 
     public Item GetItemREF()
@@ -26,10 +25,9 @@ public class UpgradeArtifactCanvas : MonoBehaviour
     }
 
     // Update is called once per frame
-    public void OpenUpgradeItemCanvas(ItemButton ItemButton)
+    public void OpenUpgradeItemCanvas(Item Item)
     {
-        ItemButtonREF = ItemButton;
-        itemREF = ItemButtonREF.GetItemREF();
+        itemREF = Item;
 
         if (GetItemREF() == null)
             return;
@@ -39,7 +37,7 @@ public class UpgradeArtifactCanvas : MonoBehaviour
         gameObject.SetActive(true);
         EnhancementManager.SetExpDisplay();
         UpgradeItemsType.text = GetItemREF().GetItemType() + " / " + GetItemREF().GetItemName();
-        ItemContentManager.SetItemButtonREF(ItemButtonREF);
+        ItemContentManager.SetItemREF(GetItemREF());
         slotPopup.OnInventoryListChanged();
     }
 }

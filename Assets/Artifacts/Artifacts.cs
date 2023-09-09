@@ -148,7 +148,6 @@ public class Artifacts : UpgradableItems
 
     public Artifacts(ArtifactsInfo artifactsInfo, ArtifactsListInfo.ArtifactType type, Rarity rarity)
     {
-        Level = 0;
         locked = false;
         ArtifactsInfo = artifactsInfo;
         Type = type;
