@@ -25,21 +25,27 @@ public class SlotPopup : MonoBehaviour
     // Update is called once per frame
     void Start()
     {
-        CharacterManager.GetInstance().GetPlayerStats().onInventoryListChanged += OnInventoryListChanged;
+        InventoryManager.GetInstance().onInventoryListChanged += OnInventoryListChanged;
         OnInventoryListChanged();
+    }
+
+    public List<ItemButton> GetItemButtonList()
+    {
+        return itembuttonlist;
     }
 
     public void OnInventoryListChanged()
     {
         HideItem(null, true);
 
-        for (int i = 0; i < CharacterManager.GetInstance().GetPlayerStats().GetINVList().Count; i++)
+        for (int i = 0; i < InventoryManager.GetInstance().GetINVList().Count; i++)
         {
+            Item item = InventoryManager.GetInstance().GetINVList()[i];
+
             GameObject go = Instantiate(AssetManager.GetInstance().ItemBorderPrefab, scrollRect.content);
             ItemButton itemButton = go.GetComponent<ItemButton>();
-            DragnDrop dragnDrop = itemButton.GetComponent<DragnDrop>();
-            dragnDrop.parentTransform = transform;
-            itemButton.SetItemREF(CharacterManager.GetInstance().GetPlayerStats().GetINVList()[i]);
+            itemButton.SetItemsSO(item.GetItemSO());
+            itemButton.SetItemREF(item);
 
             itemButton.onButtonSpawn += OnItemSpawned;
             itemButton.onButtonClick += GetItemSelected;
@@ -47,6 +53,8 @@ public class SlotPopup : MonoBehaviour
 
             if (AllowDragnDrop)
             {
+                DragnDrop dragnDrop = itemButton.GetComponent<DragnDrop>();
+                dragnDrop.parentTransform = transform;
                 dragnDrop.onBeginDragEvent += OnBeginDrag;
                 dragnDrop.onDragEvent += OnDrag;
                 dragnDrop.onEndDragEvent += OnEndDrag;
@@ -133,7 +141,7 @@ public class SlotPopup : MonoBehaviour
     private void GetItemSelected(ItemButton itemButton)
     {
         ItemInfoContent.TogglePopup(true);
-        ItemInfoContent.SetItemREF(itemButton.GetItemREF());
+        ItemInfoContent.SetItemREF(itemButton.GetItemREF(), itemButton.GetItemsSO());
         UpdateOutlineSelection(itemButton);
 
         if (SlotREF == null)
@@ -158,7 +166,7 @@ public class SlotPopup : MonoBehaviour
 
         if (SlotREF.GetItemButton())
         {
-            ItemInfoContent.SetItemREF(SlotREF.GetItemButton().GetItemREF());
+            ItemInfoContent.SetItemREF(SlotREF.GetItemButton().GetItemREF(), SlotREF.GetItemButton().GetItemREF().GetItemSO());
             UpdateOutlineSelection(GetItemButton(SlotREF.GetItemButton().GetItemREF()));
             ItemInfoContent.TogglePopup(true);
         }

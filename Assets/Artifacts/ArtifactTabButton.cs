@@ -6,12 +6,12 @@ using UnityEngine.EventSystems;
 
 public class ArtifactTabButton : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    [SerializeField] ArtifactsListInfo.ArtifactType ArtifactType;
+    [SerializeField] ArtifactType ArtifactType;
     [SerializeField] ArtifactTabGroup tabGroup;
     [SerializeField] GameObject onlineBorder;
     [SerializeField] Image tabIcon;
 
-    public ArtifactsListInfo.ArtifactType artifactType
+    public ArtifactType artifactType
     {
         get { return ArtifactType;  }
     }

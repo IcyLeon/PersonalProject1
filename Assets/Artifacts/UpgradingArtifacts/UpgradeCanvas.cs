@@ -36,8 +36,8 @@ public class UpgradeCanvas : MonoBehaviour
 
         gameObject.SetActive(true);
         EnhancementManager.SetExpDisplay();
-        UpgradeItemsType.text = GetItemREF().GetItemType() + " / " + GetItemREF().GetItemName();
-        ItemContentManager.SetItemREF(GetItemREF());
+        UpgradeItemsType.text = GetItemREF().GetItemSO().GetItemType() + " / " + GetItemREF().GetItemSO().ItemName;
+        ItemContentManager.SetItemREF(GetItemREF(), GetItemREF().GetItemSO());
         slotPopup.OnInventoryListChanged();
     }
 }

@@ -4,12 +4,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using UnityEngine;
 
-public enum Category
-{
-    FOOD,
-    ARTIFACTS
-}
-
 public abstract class Item {
     private bool FirstCreate;
 
@@ -19,39 +13,28 @@ public abstract class Item {
         set { FirstCreate = value; }
     }
     protected Category category;
-    protected ItemTemplate itemScriptableObject;
     public Category GetCategory
     {
         get { return category; }
         set { category = value; }
     }
+    protected Rarity rarity;
+    protected ItemTemplate ItemsSO;
 
-    protected ItemTemplate item
+    public void SetItemsSO(ItemTemplate itemsSO)
     {
-        get { return itemScriptableObject; }
-        set { itemScriptableObject = value; }
-    }
-
-    public virtual string GetItemType()
-    {
-        return "Unknown Type";
-    }
-    public virtual string GetItemName()
-    {
-        return item.ItemName;
-    }
-    public virtual Sprite GetItemSprite()
-    {
-        return item.ItemSprite;
-    }
-    public virtual string GetItemDesc()
-    {
-        return item.ItemDesc;
+        ItemsSO = itemsSO;
     }
 
-    public virtual Rarity GetRarity()
+    public ItemTemplate GetItemSO()
     {
-        return item.Rarity;
+        return ItemsSO;
+    }
+
+
+    public Rarity GetRarity()
+    {
+        return rarity;
     }
 
     public Item()

@@ -26,5 +26,13 @@ public class UpgradeCanvasTransition : MonoBehaviour, IPointerClickHandler
     public void SetItemREF(Item item)
     {
         ItemREF = item;
+
+        if (ItemREF == null || !(ItemREF is UpgradableItems))
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
+        gameObject.SetActive(true);
     }
 }

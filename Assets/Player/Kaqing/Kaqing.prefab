@@ -11,12 +11,11 @@ GameObject:
   - component: {fileID: 2631457759730858346}
   - component: {fileID: 6846105112978469829}
   - component: {fileID: 8687698407470774653}
-  - component: {fileID: 6117810089636157036}
-  - component: {fileID: 6011753335244179585}
   - component: {fileID: 603209537792913525}
-  - component: {fileID: 2129269539841887670}
+  - component: {fileID: 1840391478219328150}
+  - component: {fileID: 4089876988080089552}
   m_Layer: 0
-  m_Name: Character1
+  m_Name: Kaqing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -44,7 +43,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2109403457525059256}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &8687698407470774653
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -87,30 +86,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &6117810089636157036
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2109403457525059256}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8797524dab3dd2541b3b695d142db8f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &6011753335244179585
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2109403457525059256}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef8e239b85eceba47b425ce11b8640ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!54 &603209537792913525
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -127,8 +102,8 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 1
---- !u!65 &2129269539841887670
-BoxCollider:
+--- !u!136 &1840391478219328150
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -137,6 +112,22 @@ BoxCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &4089876988080089552
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2109403457525059256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78b6845e319c5f649a1f560fd8f731c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playersSO: {fileID: 11400000, guid: f4ffa19c8df97334091979fa976d3ae0, type: 2}
+  ElementalOrbPrefab: {fileID: 8455810837854244540, guid: 038cc286a7384c54e86b6e5e09da6fdb,
+    type: 3}

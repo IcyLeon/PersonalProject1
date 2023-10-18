@@ -2,25 +2,23 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+public enum ArtifactType
+{
+    FLOWER,
+    PLUME,
+    SANDS,
+    GOBLET,
+    CIRCLET
+}
+public enum ArtifactsSet
+{
+    THUNDERING_FURY,
+    NOBLESSE_OBLIGE
+}
 
-[CreateAssetMenu(fileName = "ArtifactsData", menuName = "ScriptableObjects/ArtifactsData")]
+[CreateAssetMenu(fileName = "ArtifactsListInfoSO", menuName = "ScriptableObjects/ArtifactsListInfoSO")]
 public class ArtifactsListInfo : ScriptableObject
 {
-    public enum ArtifactsSet
-    {
-        THUNDERING_FURY,
-        NOBLESSE_OBLIGE
-    }
-
-    public enum ArtifactType
-    {
-        FLOWER,
-        PLUME,
-        SANDS,
-        GOBLET,
-        CIRCLET
-    }
-
     [System.Serializable]
     public class CommonArtifactPiece
     {

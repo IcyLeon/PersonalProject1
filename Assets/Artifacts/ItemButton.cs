@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -15,19 +16,33 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
     private Item itemREF;
     private Sprite itemSprite;
 
+    [Header("Only for item display")]
+    // leave itemTemplate empty if not using it for displaying, like showcase; apple information, artifacts in the game
+    [SerializeField] ItemTemplate DisplayitemTemplate;
+    private ItemTemplate itemTemplate;
+
     public delegate void SendItemButtonInfo(ItemButton itemButton);
     public event SendItemButtonInfo onButtonClick;
     public event SendItemButtonInfo onButtonRemoveClick;
     public event SendItemButtonInfo onButtonSpawn;
 
-    [SerializeField] Image OutlineAnimation, Outline;
+    [Header("Item")]
+    [SerializeField] TextMeshProUGUI ConsumableAmountTxt;
+    [SerializeField] TextMeshProUGUI UpgradableTxt;
+
+    [Header("Button Components")]
+    [SerializeField] Image Background;
+    [SerializeField] Image OutlineAnimation;
+    [SerializeField] Image Outline;
     [SerializeField] Button RemoveImage;
+    [SerializeField] Transform StarsTransformParent;
     [SerializeField] GameObject RemoveGO;
     [SerializeField] Image ItemImage;
     [SerializeField] Image NewImage;
     [SerializeField] LockItem lockItem;
     [SerializeField] CanvasGroup canvasGroup;
     [SerializeField] ParticleSystem Burst;
+
 
     private RectTransform ItemButton_Rect;
     private ItemButton ItemButton_Drag;
@@ -52,9 +67,19 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
         ItemButton_Rect = GetComponent<RectTransform>();
         RemoveImage.onClick.AddListener(RemoveItemEvent);
     }
+
     private void RemoveItemEvent()
     {
         onButtonRemoveClick.Invoke(this);
+    }
+
+    public void SetDisplayStars(Rarity rarity)
+    {
+        for (int i = 0; i <= (int)rarity; i++)
+        {
+            GameObject go = Instantiate(AssetManager.GetInstance().StarPrefab, StarsTransformParent);
+        }
+        Background.sprite = AssetManager.GetInstance().GetItemListTemplate().raritylist[(int)rarity].rarityborderimage;
     }
 
     private void CopyItemButton(Transform parentTransform)
@@ -97,10 +122,29 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
     void Start()
     {
         SetButtonSprites();
+        SetButtonText();
         onButtonSpawn?.Invoke(this);
 
         gameObject.transform.localPosition = new Vector3(gameObject.transform.localPosition.x, gameObject.transform.localPosition.y , 0);
         transform.localScale = Vector3.one;
+    }
+
+    void SetButtonText()
+    {
+        if (GetItemREF() != null)
+        {
+            SetDisplayStars(GetItemREF().GetRarity());
+
+            switch (GetItemREF())
+            {
+                case Item item when item is UpgradableItems:
+                    UpgradableTxt.gameObject.SetActive(true);
+                    break;
+                case Item item when item is ConsumableItem:
+                    ConsumableAmountTxt.gameObject.SetActive(true);
+                    break;
+            }
+        }
     }
 
     private void Update()
@@ -112,11 +156,31 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
             transform.localScale = new Vector3(1.02f, 1.02f, 1f);
             Outline.gameObject.SetActive(true);
         }
+
+        if (GetItemREF() != null)
+        {
+            switch (GetItemREF())
+            {
+                case Item item when item is UpgradableItems:
+                    UpgradableItems upgradableItems = (UpgradableItems)item;
+                    UpgradableTxt.text = "+" + upgradableItems.GetLevel();
+                    break;
+                case Item item when item is ConsumableItem:
+                    ConsumableItem consumableItem = (ConsumableItem)item;
+                    ConsumableAmountTxt.text = consumableItem.GetAmount().ToString();
+                    break;
+            }
+        }
     }
 
     public void ToggleRemoveItemImage(bool input)
     {
         RemoveGO.SetActive(input);
+    }
+
+    public void SetItemsSO(ItemTemplate ItemsSO)
+    {
+        itemTemplate = ItemsSO;
     }
 
     private void UpdateHideLock()
@@ -141,24 +205,30 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
     {
         if (itemREF != null)
         {
-            itemSprite = itemREF.GetItemSprite();
-
-            if (itemREF is Artifacts)
-            {
-                Artifacts artifacts = itemREF as Artifacts;
-                itemSprite = ArtifactsManager.instance.GetArtifactPiece(artifacts.type, artifacts.artifactsInfo).ArtifactImage;
-            }
+            itemSprite = itemREF.GetItemSO().ItemSprite;
 
             if (itemREF.isNew)
             {
                 NewImage.gameObject.SetActive(true);
             }
-
-            ItemImage.sprite = itemSprite;
-            ItemImage.enabled = true;
         }
+        else
+        {
+            if (DisplayitemTemplate != null)
+            {
+                itemTemplate = DisplayitemTemplate;
+                itemSprite = itemTemplate.ItemSprite;
+                SetDisplayStars(itemTemplate.Rarity);
+            }
+
+        }
+        ItemImage.sprite = itemSprite;
     }
 
+    public ItemTemplate GetItemsSO()
+    {
+        return itemTemplate;
+    }
     public void DisableNewImage()
     {
         NewImage.gameObject.SetActive(false);
@@ -217,7 +287,6 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
         dragnDrop.onBeginDragEvent -= OnBeginDrag;
         dragnDrop.onDragEvent -= OnDrag;
         dragnDrop.onEndDragEvent -= OnEndDrag;
-        AssetManager.GetInstance().SetDragItem(null);
     }
 
     public void OnPointerEnter(PointerEventData eventData)

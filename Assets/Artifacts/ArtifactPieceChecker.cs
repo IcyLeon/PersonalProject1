@@ -31,7 +31,7 @@ public class ArtifactPieceChecker : MonoBehaviour
         itemlist.Clear();
 
         if (isFromPlayersInvInstead)
-            itemlist = CharacterManager.GetInstance().GetPlayerStats().GetINVList();
+            itemlist = InventoryManager.GetInstance().GetINVList();
         else
         {
             for (int i = 0; i < CharacterManager.GetInstance().GetCurrentCharacter().GetEquippedArtifactsList().Count; i++)
@@ -42,9 +42,9 @@ public class ArtifactPieceChecker : MonoBehaviour
         }
         for (int i = 0; i < itemlist.Count; i++)
         {
-            Item item = CharacterManager.GetInstance().GetPlayerStats().GetINVList()[i];
+            Item item = InventoryManager.GetInstance().GetINVList()[i];
             Artifacts artifact = item as Artifacts;
-            if (artifact.artifactsInfo.ArtifactSet == artifactsSet || artifactsSet == null)
+            if (artifact.GetArtifactsSet() == artifactsSet || artifactsSet == null)
             {
                 if (!artifact.GetLockStatus() || IncludeLockArtifact)
                     count++;

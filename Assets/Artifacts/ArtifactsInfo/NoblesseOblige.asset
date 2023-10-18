@@ -14,32 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ArtifactSet: 1
   ArtifactsSetName: Nobless Oblige
-  artifactPiece:
-  - artifactType: 0
-    artifactName: Royal Flora
-    ArtifactImage: {fileID: 21300000, guid: 8d163dabff14eea4f9e813807af10608, type: 3}
-    artifactDesc: A satin flower with a glossy finish, fit for an elegant gathering.
-      It still looks as distinguished as it did on the day it was cast aside.
-  - artifactType: 1
-    artifactName: Royal Plume
-    ArtifactImage: {fileID: 21300000, guid: f1e3df6240509fc4bbdf6e5947e6d522, type: 3}
-    artifactDesc: A feathered hat accessory worn by the old aristocrats of Mondstadt
-      on hunts. It still stands proudly as if no time has passed.
-  - artifactType: 2
-    artifactName: Royal Pocket Watch
-    ArtifactImage: {fileID: 21300000, guid: f406715be273bbf419d66519c09b409a, type: 3}
-    artifactDesc: A pocket watch that once belonged to the old aristocrats of Mondstadt.
-      Passed down from generation to generation, it has witnessed many years of history.
-  - artifactType: 3
-    artifactName: Royal Silver Urn
-    ArtifactImage: {fileID: 21300000, guid: 41f528ef84bf13f428e8f19c217338e2, type: 3}
-    artifactDesc: An ornamental urn that once belonged to the old aristocrats of
-      Mondstadt. Mournful winds seem to echo within its empty interior.
-  - artifactType: 4
-    artifactName: Royal Masque
-    ArtifactImage: {fileID: 21300000, guid: b9a1047995475914080897913ea68f63, type: 3}
-    artifactDesc: A masquerade mask worn by the old aristocrats of Mondstadt. Its
-      hollow eyes are fixated on the golden days of the past.
+  artifactSOList:
+  - {fileID: 11400000, guid: 3704e950be39b0f44b38efc82ed70f6c, type: 2}
+  - {fileID: 11400000, guid: 0dbb7456c844550469875a451584c4b7, type: 2}
+  - {fileID: 11400000, guid: cd9b21edae110504992c627f8edb219c, type: 2}
+  - {fileID: 11400000, guid: 7caf1a9b955110a4990ef013542c071f, type: 2}
+  - {fileID: 11400000, guid: bc8f97a5e4ea6d948bfbb1259c5a7097, type: 2}
   TwoPieceDesc: Elemental Burst DMG +20%
   FourPieceDesc: Using an Elemental Burst increases all party members' ATK by 20%
     for 12s. This effect cannot stack.

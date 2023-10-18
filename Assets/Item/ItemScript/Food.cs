@@ -4,11 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class Food : ConsumableItem
 {
-    FoodData fooddata;
-    public override string GetItemType()
-    {
-        return "Food";
-    }
+    private float Heal;
 
     public override void Use(int Useamount)
     {
@@ -17,7 +13,6 @@ public class Food : ConsumableItem
     public Food(FoodData fd) : base()
     {
         category = Category.FOOD;
-        item = fooddata.itemTemplates;
-        fooddata = fd;
+        Heal = fd.Heal;
     }
 }

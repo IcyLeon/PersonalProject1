@@ -16,7 +16,7 @@ public class ArtifactTabGroup : MonoBehaviour
     public struct TabMenu
     {
         public GameObject TabPanel;
-        public ArtifactsListInfo.ArtifactType ArtifactType;
+        public ArtifactType ArtifactType;
     }
     [SerializeField] TabMenu[] TabMenuList;
     private ArtifactTabButton selectedtab;
@@ -36,7 +36,7 @@ public class ArtifactTabGroup : MonoBehaviour
         return currentPanel;
     }
 
-    public int GetTabPanelIdx(ArtifactsListInfo.ArtifactType ArtifactType)
+    public int GetTabPanelIdx(ArtifactType ArtifactType)
     {
         for (int i = 0; i < TabMenuList.Length; i++)
         {
@@ -62,7 +62,7 @@ public class ArtifactTabGroup : MonoBehaviour
     {
         for (int i = 0; i < tabs.Count; i++)
         {
-            if (tabs[i].artifactType == ArtifactsListInfo.ArtifactType.FLOWER)
+            if (tabs[i].artifactType == ArtifactType.FLOWER)
                 OnTabSelected(tabs[i]);
         }
         InitSliderSize();
@@ -104,7 +104,7 @@ public class ArtifactTabGroup : MonoBehaviour
 
     IEnumerator MoveScrollBar()
     {
-        float targetValue = 1 - ((float)ArrayUtility.IndexOf(tabs.ToArray(), selectedtab) / (tabs.Count - 1));
+        float targetValue = ((float)ArrayUtility.IndexOf(tabs.ToArray(), selectedtab) / (tabs.Count - 1));
         float elapsedTime = 0f;
         float animationDuration = 0.15f;
 

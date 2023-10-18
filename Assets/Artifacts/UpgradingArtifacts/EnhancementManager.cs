@@ -41,7 +41,7 @@ public class EnhancementManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CharacterManager.GetInstance().GetPlayerStats().onInventoryListChanged += OnInventoryListChanged;
+        InventoryManager.GetInstance().onInventoryListChanged += OnInventoryListChanged;
         OnInventoryListChanged();
 
         LoadEmptySlots();
@@ -71,7 +71,7 @@ public class EnhancementManager : MonoBehaviour
 
     private void Update()
     {
-        for (int i = EnhancementItemList.Count - 1; i >= 0; i--)
+        for (int i = 0; i < EnhancementItemList.Count; i++)
         {
             Slot slot = EnhancementItemList[i].GetComponent<Slot>();
             if (slot.GetItemButton()?.GetItemREF() is UpgradableItems upgradableItem && upgradableItem.GetLockStatus())
@@ -79,8 +79,9 @@ public class EnhancementManager : MonoBehaviour
                 slot.SetItemButton(null);
             }
         }
-        ClearAllBtn.gameObject.SetActive(GetNoofSlotsTaken() != 0);
 
+        upgradeCanvas.SlotPopup.HideItem(GetItemREF());
+        ClearAllBtn.gameObject.SetActive(GetNoofSlotsTaken() != 0);
         if (!UpgradinginProgress)
         {
             UpdateContent();
@@ -128,7 +129,7 @@ public class EnhancementManager : MonoBehaviour
         for (int i = 0; i < EnhancementItemList.Count; i++)
         {
             Slot slot = EnhancementItemList[i].GetComponent<Slot>();
-            
+
             if (slot.GetItemButton() == null)
             {
                 return slot;
@@ -144,8 +145,11 @@ public class EnhancementManager : MonoBehaviour
 
     private int GetLevelIncrease()
     {
-        UpgradableItems UpgradableItemREF = GetItemREF() as UpgradableItems;
         int increaseLevel = 0;
+        UpgradableItems UpgradableItemREF = GetItemREF() as UpgradableItems;
+        if (UpgradableItemREF == null)
+            return increaseLevel;
+
         float current = PreviewUpgradeEXP;
 
         for (int i = 0; i < CostList.Length; i++)
@@ -165,6 +169,9 @@ public class EnhancementManager : MonoBehaviour
     private void UpdatePreviewEXP()
     {
         UpgradableItems UpgradableItemREF = GetItemREF() as UpgradableItems;
+        if (UpgradableItemREF == null)
+            return;
+
         PreviewUpgradeEXP = UpgradableItemREF.GetExpAmount() + GetTotalEXP();
         previewProgressSlider.minValue = upgradeProgressSlider.minValue;
         previewProgressSlider.maxValue = upgradeProgressSlider.maxValue;
@@ -176,7 +183,7 @@ public class EnhancementManager : MonoBehaviour
         if (GetItemREF() != null)
         {
             UpgradableItems UpgradableItemREF = GetItemREF() as UpgradableItems;
-            selectedItemImage.sprite = UpgradableItemREF.GetItemSprite();
+            selectedItemImage.sprite = UpgradableItemREF.GetItemSO().ItemSprite;
             LevelDisplay.text = "+" + UpgradableItemREF.GetLevel();
             ExpAmountDisplay.text = Mathf.RoundToInt(upgradeProgressSlider.value) + "/" + upgradeProgressSlider.maxValue.ToString();
 
@@ -236,7 +243,6 @@ public class EnhancementManager : MonoBehaviour
         {
             Slot slot = EnhancementItemList[i].GetComponent<Slot>();
             upgradeCanvas.SlotPopup.UnSubscribeSlot(slot);
-            slot.onSlotClick -= RemoveSelfItemButton;
             slot.SlotItemButtonChanged -= OnSlotItemButtonChanged;
             Destroy(EnhancementItemList[i].gameObject);
         }
@@ -246,7 +252,6 @@ public class EnhancementManager : MonoBehaviour
             GameObject enhancementitemslot = Instantiate(AssetManager.GetInstance().SlotPrefab, SlotsParent);
             Slot slot = enhancementitemslot.GetComponent<Slot>();
             upgradeCanvas.SlotPopup.SubscribeSlot(slot);
-            slot.onSlotClick += RemoveSelfItemButton;
             slot.SlotItemButtonChanged += OnSlotItemButtonChanged;
             EnhancementItemList.Add(enhancementitemslot);
         }
@@ -262,11 +267,6 @@ public class EnhancementManager : MonoBehaviour
                 return;
 
             ItemButton SlotPopupitemButton = upgradeCanvas.SlotPopup.GetItemButton(sendslotInfo.itemButtonREF.GetItemREF());
-            for (int i = 0; i < EnhancementItemList.Count; i++)
-            {
-                Slot slot = EnhancementItemList[i].GetComponent<Slot>();
-                AssetManager.GetInstance().UpdateCurrentSelectionOutline(slot, null);
-            }
 
             if (!SlotPopupitemButton)
                 return;
@@ -275,21 +275,9 @@ public class EnhancementManager : MonoBehaviour
         }
     }
 
-    private void RemoveSelfItemButton(Slot selectedSlot)
-    {
-        for (int i = 0; i < EnhancementItemList.Count; i++)
-        {
-            Slot slot = EnhancementItemList[i].GetComponent<Slot>();
-            AssetManager.GetInstance().UpdateCurrentSelectionOutline(slot, null);
-        }
-        AssetManager.GetInstance().UpdateCurrentSelectionOutline(null, selectedSlot);
-
-        upgradeCanvas.SlotPopup.HideItem(GetItemREF());
-    }
     private void OnInventoryListChanged()
     {
         ClearAll();
-        RemoveSelfItemButton(null);
     }
 
     private void ManualRemoveItems(object sender, SendSlotInfo e)
@@ -331,12 +319,19 @@ public class EnhancementManager : MonoBehaviour
             }
 
             if (FindAvailableSlot() != null)
-                FindAvailableSlot().SetItemButton(e.itemButtonREF.GetItemREF());
+            {
+                if (!isMaxError())
+                    FindAvailableSlot().SetItemButton(e.itemButtonREF.GetItemREF());
+                else
+                    DisplayMaxError();
+            }
             else
+            {
                 DisplayFullError();
+            }
         }
     }
-   
+
 
     private IEnumerator UpgradeProgress()
     {
@@ -348,7 +343,7 @@ public class EnhancementManager : MonoBehaviour
         while (GetItemREF() != null)
         {
             UpgradinginProgress = true;
-            if (UpgradableItemREF.GetLevel() <= CostList.Length)
+            if (UpgradableItemREF.GetLevel() < CostList.Length)
             {
                 if (Mathf.Approximately(upgradeProgressSlider.value, upgradeProgressSlider.maxValue))
                 {
@@ -359,16 +354,17 @@ public class EnhancementManager : MonoBehaviour
                     }
                     else
                     {
-                        SetProgressUpgrades(0, 0);
+                        SetProgressUpgrades(0, 0); // max level
                         UpdateContent();
                     }
                     UpdatePreviewEXP();
                     upgradeProgressSlider.value = upgradeProgressSlider.minValue;
                     UpgradableItemREF.Upgrade();
-
-                    if ((UpgradableItemREF.GetLevel()) >= CostList.Length)
-                        break;
                 }
+            }
+            else
+            {
+                break;
             }
 
             if (!Mathf.Approximately(upgradeProgressSlider.value, UpgradableItemREF.GetExpAmount()))
@@ -381,8 +377,6 @@ public class EnhancementManager : MonoBehaviour
         }
         ButtonMask.SetActive(false);
         UpgradinginProgress = false;
-
-        Debug.Log("Enhanced Completed");
     }
 
     private void SetProgressUpgrades(float min, float max)
@@ -400,7 +394,7 @@ public class EnhancementManager : MonoBehaviour
             Slot slot = GetEnhancementItemList()[i].GetComponent<Slot>();
             if (slot.GetItemButton() != null)
             {
-                switch(slot.GetItemButton().GetItemREF()?.GetRarity())
+                switch (slot.GetItemButton().GetItemREF()?.GetRarity())
                 {
                     case Rarity.ThreeStar: // hardcode for now
                         total += 500f;
@@ -409,7 +403,7 @@ public class EnhancementManager : MonoBehaviour
                         total += 1000f;
                         break;
                     case Rarity.FiveStar:
-                        total += 10000f;
+                        total += 5000f;
                         break;
                 }
             }
@@ -429,7 +423,15 @@ public class EnhancementManager : MonoBehaviour
 
     private void AutoAdd()
     {
-        StartCoroutine(GetRandomsItemButton(CharacterManager.GetInstance().GetPlayerStats().GetINVList()));
+        if (!isMaxError())
+        {
+            GetRandomsItemButton();
+        }
+        else
+        {
+            DisplayMaxError();
+            return;
+        }
 
         if (NoofItemsAdded <= 0 && FindAvailableSlot())
             AssetManager.GetInstance().OpenPopupPanel("No Consumable Found");
@@ -441,6 +443,23 @@ public class EnhancementManager : MonoBehaviour
     {
         if (!FindAvailableSlot())
             AssetManager.GetInstance().OpenPopupPanel("Slots Full");
+    }
+
+    private bool isMaxError()
+    {
+        UpgradableItems upgradableItems = GetItemREF() as UpgradableItems;
+        if (upgradableItems != null)
+        {
+            if (upgradableItems.GetLevel() + GetLevelIncrease() == CostList.Length)
+                return true;
+        }
+
+        return false;
+    }
+
+    private void DisplayMaxError()
+    {
+        AssetManager.GetInstance().OpenPopupPanel("Item Max");
     }
 
     private void UpgradeItem()
@@ -460,31 +479,42 @@ public class EnhancementManager : MonoBehaviour
             {
                 if (slot.GetItemButton().GetItemREF() != null)
                 {
-                    CharacterManager.GetInstance().GetPlayerStats().RemoveItems(slot.GetItemButton().GetItemREF());
+                    InventoryManager.GetInstance().RemoveItems(slot.GetItemButton().GetItemREF());
                     slot.SetItemButton(null);
                 }
             }
         }
     }
 
-    private IEnumerator GetRandomsItemButton(List<Item> itemlistREF)
+    private void GetRandomsItemButton()
     {
-        List<Item> itemsList = new List<Item>(itemlistREF);
-        itemsList.RemoveAll(item => item.GetCategory != GetItemREF().GetCategory || (int)item.GetRarity() > RaritySelection);
+        List<Item> itemsList = new List<Item>(InventoryManager.GetInstance().GetINVList());
+
+        for (int i = 0; i < itemsList.Count; i++)
+        {
+            Item item = itemsList[i];
+
+            if (item.GetCategory != GetItemREF().GetCategory || (int)item.GetRarity() > RaritySelection)
+            {
+                itemsList.Remove(item);
+                i--;
+            }
+        }
+
 
         NoofItemsAdded = 0;
         int slotsTaken = GetNoofSlotsTaken();
 
-        if ((GetNoofSlotsTaken() >= GetTotalSlots()) || itemsList.Count == 0 || !FindAvailableSlot())
-            yield break;
+        if ((GetNoofSlotsTaken() >= GetTotalSlots()) || itemsList.Count == 0 || !FindAvailableSlot() || isMaxError())
+            return;
 
-        Item[] shuffledItems = itemsList.OrderBy(item => UnityEngine.Random.value).OrderBy(item => (int)item.GetRarity()).ToArray();
+        itemsList = itemsList.OrderBy(item => UnityEngine.Random.value).OrderBy(item => (int)item.GetRarity()).ToList();
 
         for (int i = 0; i < itemsList.Count; i++)
         {
-            Item item = shuffledItems[i];
+            Item item = itemsList[i];
 
-            if (GetNoofSlotsTaken() >= GetTotalSlots())
+            if (GetNoofSlotsTaken() >= GetTotalSlots() || isMaxError())
                 break;
 
             if (CheckIfItemalreadyExist(item) != null || item == GetItemREF())
@@ -505,12 +535,9 @@ public class EnhancementManager : MonoBehaviour
             }
 
 
-            FindAvailableSlot().SetItemButton(item);
+            FindAvailableSlot()?.SetItemButton(item);
             NoofItemsAdded++;
             slotsTaken++;
-            yield return null;
         }
-
-        yield return null;
     }
 }

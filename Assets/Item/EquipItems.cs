@@ -9,8 +9,18 @@ public class EquipItems : MonoBehaviour, IPointerClickHandler
     private Characters currentCharacterREF;
     [SerializeField] TextMeshProUGUI EquipTxt;
     private Item itemREF;
-    [SerializeField] DisplayItemsStatsManager displayItemsStatsManager;
 
+    public void SetItemREF(Item item)
+    {
+        itemREF = item;
+        if (itemREF == null || !(itemREF is UpgradableItems))
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+
+        gameObject.SetActive(true);
+    }
     public void OnPointerClick(PointerEventData eventData)
     {
         switch(itemREF.GetCategory)
@@ -19,7 +29,7 @@ public class EquipItems : MonoBehaviour, IPointerClickHandler
                 Artifacts artifacts = itemREF as Artifacts;
                 if (artifacts != null)
                 {
-                    Artifacts ExistArtifacts = currentCharacterREF.CheckIfArtifactTypeExist(artifacts.type);
+                    Artifacts ExistArtifacts = currentCharacterREF.CheckIfArtifactTypeExist(artifacts.GetArtifactType());
 
                     if (artifacts.GetCharacter() == null)
                     {
@@ -42,16 +52,11 @@ public class EquipItems : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
 
     // Update is called once per frame
     void Update()
     {
         currentCharacterREF = CharacterManager.GetInstance().GetCurrentCharacter();
-        itemREF = displayItemsStatsManager.GetItemCurrentSelected();
 
         if (itemREF != null)
         {

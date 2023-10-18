@@ -14,11 +14,6 @@ public class CharacterManager : MonoBehaviour
         instance = this;
     }
 
-    public PlayerStats GetPlayerStats()
-    {
-        return playerController.GetInventory().GetPlayerStats();
-
-    }
     public Characters GetCurrentCharacter()
     {
         return playerController.GetCharacterRB().GetComponent<Characters>();
@@ -29,9 +24,13 @@ public class CharacterManager : MonoBehaviour
         this.playerController = playerController;
     }
 
+    public PlayerController GetPlayerController()
+    {
+        return playerController;
+    }
     public List<Characters> GetEquippedCharacter()
     {
-        return playerController.GetInventory().GetEquipCharactersList();
+        return InventoryManager.GetInstance().GetEquipCharactersList();
     }
     public List<Characters> GetCharacterList()
     {

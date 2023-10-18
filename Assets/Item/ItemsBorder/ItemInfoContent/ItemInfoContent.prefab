@@ -1042,9 +1042,9 @@ RectTransform:
   m_Father: {fileID: 7342127706501107468}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 25, y: -20.215}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 25, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &5927754367331153075
@@ -2730,8 +2730,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 516a8f0cac7006248bd64856f8c1ff59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ArtifactNameText: {fileID: 7837797561624904979}
-  ArtifactPieceText: {fileID: 2481976078272711376}
+  ItemNameText: {fileID: 7837797561624904979}
+  ItemTypeText: {fileID: 2481976078272711376}
   ArtifactSetText: {fileID: 1659066989171871348}
   ArtifactLevelText: {fileID: 2044177833713786696}
   ArtifactDescText: {fileID: 6094662577894023170}
@@ -2743,7 +2743,7 @@ MonoBehaviour:
   - {fileID: 5040363767453768155}
   - {fileID: 8034344777378762348}
   - {fileID: 7797771855729737255}
-  StarDisplayList: []
+  StarsTransformParent: {fileID: 0}
 --- !u!1 &9036259576784786829
 GameObject:
   m_ObjectHideFlags: 0

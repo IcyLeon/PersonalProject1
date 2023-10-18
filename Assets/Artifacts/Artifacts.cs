@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class Artifacts : UpgradableItems
 {
-    private Rarity ArtifactsRarity;
     private Characters characters;
     public enum ArtifactsStat
     {
@@ -135,60 +134,23 @@ public class Artifacts : UpgradableItems
         }
     };
 
-    private ArtifactsInfo ArtifactsInfo;
-    private ArtifactsListInfo.ArtifactType Type;
-    public ArtifactsListInfo.ArtifactType type
+    private ArtifactsSet ArtifactsSet;
+
+    public ArtifactsSet GetArtifactsSet()
     {
-        get { return Type;  }
-    }
-    public ArtifactsInfo artifactsInfo
-    {
-        get { return ArtifactsInfo; }
+        return ArtifactsSet;
     }
 
-    public Artifacts(ArtifactsInfo artifactsInfo, ArtifactsListInfo.ArtifactType type, Rarity rarity)
+    public Artifacts(ArtifactType type, ArtifactsSet artifactsSet, Rarity rarity)
     {
+        ArtifactsSet = artifactsSet;
+        ArtifactsInfo artifactsinfo = ArtifactsManager.instance.GetArtifactsInfo(ArtifactsSet);
         locked = false;
-        ArtifactsInfo = artifactsInfo;
-        Type = type;
+        ItemsSO = ArtifactsManager.instance.GetArtifactSO(type, artifactsinfo);
         category = Category.ARTIFACTS;
-        ArtifactsRarity = rarity;
+        this.rarity = rarity;
     }
 
-    public override string GetItemType()
-    {
-        return ArtifactsManager.instance.GetArtifactPieceName(type);
-    }
-
-    public override string GetItemName()
-    {
-        return ArtifactsManager.instance.GetArtifactPiece(type, ArtifactsInfo).artifactName;
-    }
-
-    public override Rarity GetRarity()
-    {
-        return ArtifactsRarity;
-    }
-
-    public override string GetItemDesc()
-    {
-        return ArtifactsManager.instance.GetArtifactPiece(type, ArtifactsInfo).artifactDesc;
-    }
-
-    public override Sprite GetItemSprite()
-    {
-        return ArtifactsManager.instance.GetArtifactPiece(type, ArtifactsInfo).ArtifactImage;
-    }
-
-    public string Get2PieceType()
-    {
-        return artifactsInfo.TwoPieceDesc;
-    }
-
-    public string Get4PieceType()
-    {
-        return artifactsInfo.FourPieceDesc;
-    }
 
     private void GenerateRandomArtifacts(ArtifactsStat[] excludeArtifactsStatsList = null)
     {
@@ -212,7 +174,7 @@ public class Artifacts : UpgradableItems
             {
                 if (excludeStat == currentStat)
                 {
-                    return true;
+                    return false;
                 }
             }
         }
@@ -233,29 +195,37 @@ public class Artifacts : UpgradableItems
         }
     }
 
+    public ArtifactType GetArtifactType()
+    {
+        ArtifactsSO artifactsSO = ItemsSO as ArtifactsSO;
+        if (artifactsSO == null)
+            return default(ArtifactType);
+        return artifactsSO.artifactType;
+    }
+
     public void GenerateMainArtifactStats()
     {
-        switch (type)
+        switch (GetArtifactType())
         {
-            case ArtifactsListInfo.ArtifactType.FLOWER:
+            case ArtifactType.FLOWER:
                 Stats.Add(ArtifactsStat.HP);
                 break;
-            case ArtifactsListInfo.ArtifactType.PLUME:
+            case ArtifactType.PLUME:
                 Stats.Add(ArtifactsStat.ATK);
                 break;
-            case ArtifactsListInfo.ArtifactType.SANDS:
+            case ArtifactType.SANDS:
                 {
                     ArtifactsStat[] excludeArtifactsStatsList = { ArtifactsStat.DMGBONUS, ArtifactsStat.CritRate, ArtifactsStat.CritDamage, ArtifactsStat.DEF, ArtifactsStat.HP, ArtifactsStat.ATK };
                     GenerateRandomArtifacts(excludeArtifactsStatsList);
                 }
                 break;
-            case ArtifactsListInfo.ArtifactType.GOBLET:
+            case ArtifactType.GOBLET:
                 {
                     ArtifactsStat[] excludeArtifactsStatsList = { ArtifactsStat.DEF, ArtifactsStat.HP, ArtifactsStat.ATK, ArtifactsStat.ER };
                     GenerateRandomArtifacts(excludeArtifactsStatsList);
                 }
                 break;
-            case ArtifactsListInfo.ArtifactType.CIRCLET:
+            case ArtifactType.CIRCLET:
                 {
                     ArtifactsStat[] excludeArtifactsStatsList = { ArtifactsStat.DMGBONUS, ArtifactsStat.DEF, ArtifactsStat.HP, ArtifactsStat.ATK, ArtifactsStat.ER };
                     GenerateRandomArtifacts(excludeArtifactsStatsList);

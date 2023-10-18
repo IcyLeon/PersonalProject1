@@ -9,16 +9,11 @@ public abstract class ConsumableItem : Item
     protected int amount;
     public event Action onValueChanged;
 
-    public override string GetItemType()
-    {
-        return "Unknown Consumable Item";
-    }
-
     public virtual void Use(int Useamount)
     {
         if (amount <= 0)
         {
-            CharacterManager.GetInstance().GetPlayerStats().RemoveItems(this);
+            InventoryManager.GetInstance().RemoveItems(this);
             return;
         }
 
@@ -43,6 +38,6 @@ public abstract class ConsumableItem : Item
 
     public ConsumableItem() : base()
     {
-        amount = 0;
+        amount = 1;
     }
 }

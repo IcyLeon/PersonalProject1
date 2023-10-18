@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//[CreateAssetMenu(fileName = "Data", menuName = "ScriptableObjects/PlayerStats", order = 1)]
 public class PlayerStats
 {
     private int Load;
@@ -11,12 +10,9 @@ public class PlayerStats
     private int mora;
     List<Item> InventoryList;
 
-    public event Action onInventoryListChanged;
-
-    public int Mora
+    public int GetMora()
     {
-        get { return mora; }
-        set { mora = value; }
+        return mora;
     }
 
     public List<Item> GetINVList()
@@ -24,21 +20,17 @@ public class PlayerStats
         return InventoryList;
     }
 
-    public void CallRefreshInventory()
-    {
-        onInventoryListChanged?.Invoke();
-    }
-
     public void AddItems(Item item)
     {
+        if (item == null)
+            return;
+
         InventoryList.Add(item);
-        CallRefreshInventory();
     }
 
     public void RemoveItems(Item item)
     {
         InventoryList.Remove(item);
-        CallRefreshInventory();
     }
 
     public PlayerStats()

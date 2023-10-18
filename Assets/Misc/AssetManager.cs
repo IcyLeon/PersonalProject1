@@ -13,6 +13,7 @@ public class AssetManager : MonoBehaviour
     [SerializeField] MessagePanel InfomationPanel;
     [SerializeField] PopupPanel PopupPanel;
     [SerializeField] ItemsList itemlisttemplate;
+    public GameObject StarPrefab;
     private GameObject DraggingItem;
     public GameObject ItemBorderPrefab;
     public GameObject SlotPrefab;
@@ -22,7 +23,15 @@ public class AssetManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        instance = this;
+        if (instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
     }
     public GameObject GetDragItem()
     {

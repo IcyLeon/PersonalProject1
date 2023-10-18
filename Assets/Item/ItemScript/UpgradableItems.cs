@@ -31,10 +31,7 @@ public abstract class UpgradableItems : Item
     {
         ExpAmount = amt; 
     }
-    public override string GetItemType()
-    {
-        return "Unknown Upgradable Item";
-    }
+
 
     public UpgradableItems() : base()
     {

@@ -12,9 +12,12 @@ public class ItemContentManager : MonoBehaviour
     [SerializeField] ItemContentDisplay ItemContentDisplay;
     [SerializeField] LockItem LockButton;
     private Item ItemREF;
-    public void SetItemREF(Item item)
+    private ItemTemplate ItemsSO;
+
+    public void SetItemREF(Item item, ItemTemplate itemsSO)
     {
         ItemREF = item;
+        ItemsSO = itemsSO;
 
         UpgradableItems upgradableItems = ItemREF as UpgradableItems;
         if (upgradableItems != null)
@@ -30,21 +33,24 @@ public class ItemContentManager : MonoBehaviour
     }
     private void DisplayContent()
     {
-        if (ItemREF == null)
-            return;
-
         foreach (GameObject go in ItemContent)
-        {
             go.SetActive(false);
-            if (ItemREF is UpgradableItems && go == ItemContent[0])
+
+        if (ItemREF != null)
+        {
+            ItemCardImage.sprite = AssetManager.GetInstance().GetItemListTemplate().raritylist[(int)ItemREF.GetRarity()].ItemCardImage;
+            if (ItemREF is UpgradableItems)
                 ItemContent[0].SetActive(true);
-            else if (ItemREF is ConsumableItem && go == ItemContent[1])
+            else if (ItemREF is ConsumableItem)
                 ItemContent[1].SetActive(true);
         }
+        else
+        {
+            ItemCardImage.sprite = AssetManager.GetInstance().GetItemListTemplate().raritylist[(int)ItemsSO.Rarity].ItemCardImage;
+        }
 
-        ItemSprite.sprite = ItemREF.GetItemSprite();
-        ItemCardImage.sprite = AssetManager.GetInstance().GetItemListTemplate().raritylist[(int)ItemREF.GetRarity()].ItemCardImage;
-        ItemContentDisplay.RefreshItemContentDisplay(ItemREF);
+        ItemSprite.sprite = ItemsSO.ItemSprite;
+        ItemContentDisplay.RefreshItemContentDisplay(ItemREF, ItemsSO);
         LockButton.SetItemREF(ItemREF);
     }
     public void TogglePopup(bool active)

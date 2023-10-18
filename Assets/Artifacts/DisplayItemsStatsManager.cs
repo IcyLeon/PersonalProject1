@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class DisplayItemsStatsManager : MonoBehaviour
 {
     [System.Serializable]
-    public struct Background
+    public class Background
     {
         public GameObject BackgroundGO;
         public Color ParticlesColor;
@@ -22,6 +22,7 @@ public class DisplayItemsStatsManager : MonoBehaviour
     [SerializeField] GameObject DetailsPanel;
     [SerializeField] LockItem LockButton;
     [SerializeField] GameObject UpgradeButton;
+    [SerializeField] EquipItems EquipButton;
     [SerializeField] Image SelectedItemImage;
     [SerializeField] ItemContentDisplay ItemContentDisplay;
     [SerializeField] ParticleSystem burst;
@@ -29,13 +30,14 @@ public class DisplayItemsStatsManager : MonoBehaviour
     [Header("Display Artifacts")]
     [SerializeField] ArtifactTabGroup TabGroup;
     private Item SelectedItem, PreviousSelectedItem;
+    private ItemTemplate SelectedItemsSO;
     private ItemButton SelectedItemButton;
     private List<ItemButton> itembuttonlist = new();
 
     // Start is called before the first frame update
     void Start()
     {
-        CharacterManager.GetInstance().GetPlayerStats().onInventoryListChanged += OnInventoryListChanged;
+        InventoryManager.GetInstance().onInventoryListChanged += OnInventoryListChanged;
         OnInventoryListChanged();
         TabGroup.onTabChanged += onTabChangedEvent;
         DetailsPanel.SetActive(false);
@@ -61,25 +63,39 @@ public class DisplayItemsStatsManager : MonoBehaviour
     void SetCurrentBackground(Rarity rarity)
     {
         for (int i = 0; i < Backgrounds.Length; i++)
-        {
             Backgrounds[i].BackgroundGO.SetActive(false);
-            if (Backgrounds[i].Rarity == rarity)
-            {
-                Backgrounds[i].BackgroundGO.SetActive(true);
-                ChangeParticleColor(Backgrounds[i].ParticlesColor);
-            }
+
+        Background background = GetBackgroundGO(rarity);
+        if (background != null)
+        {
+            ChangeParticleColor(background.ParticlesColor);
+            background.BackgroundGO.SetActive(true);
         }
     }
 
+    private Background GetBackgroundGO(Rarity rarity)
+    {
+        for (int i = 0; i < Backgrounds.Length; i++)
+        {
+            if (Backgrounds[i].Rarity == rarity)
+            {
+                return Backgrounds[i];
+            }
+        }
+        return null;
+    }
     // Update is called once per frame
     void DisplaySelectedItem()
     {
         if (SelectedItem != null)
-        {
-            LockButton.SetItemREF(SelectedItem);
-            ItemContentDisplay.RefreshItemContentDisplay(SelectedItem);
             SetCurrentBackground(SelectedItem.GetRarity());
-        }
+        else
+            SetCurrentBackground(SelectedItemsSO.Rarity);
+
+        EquipButton.SetItemREF(SelectedItem);
+
+        LockButton.SetItemREF(SelectedItem);
+        ItemContentDisplay.RefreshItemContentDisplay(SelectedItem, SelectedItemsSO);
     }
 
     private void onTabChangedEvent(object sender, EventArgs e)
@@ -108,14 +124,15 @@ public class DisplayItemsStatsManager : MonoBehaviour
         }
         itembuttonlist.Clear();
 
-        for (int i = 0; i < CharacterManager.GetInstance().GetPlayerStats().GetINVList().Count; i++)
+        for (int i = 0; i < InventoryManager.GetInstance().GetINVList().Count; i++)
         {
-            Item item = CharacterManager.GetInstance().GetPlayerStats().GetINVList()[i];
+            Item item = InventoryManager.GetInstance().GetINVList()[i];
             if (item is not UpgradableItems)
                 continue;
 
             GameObject go = Instantiate(AssetManager.GetInstance().ItemBorderPrefab);
             ItemButton itemButton = go.GetComponent<ItemButton>();
+            itemButton.SetItemsSO(item.GetItemSO());
             itemButton.SetItemREF(item);
 
             UpgradableItems UpgradableItemREF = itemButton.GetItemREF() as UpgradableItems;
@@ -123,7 +140,7 @@ public class DisplayItemsStatsManager : MonoBehaviour
             {
                 case Category.ARTIFACTS:
                     Artifacts artifacts = UpgradableItemREF as Artifacts;
-                    itemButton.gameObject.transform.SetParent(TabGroup.GetTabMenuList()[TabGroup.GetTabPanelIdx(artifacts.type)].TabPanel.transform);
+                    itemButton.gameObject.transform.SetParent(TabGroup.GetTabMenuList()[TabGroup.GetTabPanelIdx(artifacts.GetArtifactType())].TabPanel.transform);
                     break;
             }
             itemButton.onButtonClick += GetItemSelected;
@@ -137,15 +154,16 @@ public class DisplayItemsStatsManager : MonoBehaviour
     private void GetItemSelected(ItemButton itemButton)
     {
         PreviousSelectedItem = SelectedItem;
+        SelectedItemsSO = itemButton.GetItemsSO();
         SelectedItem = itemButton.GetItemREF();
         UpdateOutlineSelection();
 
-        DetailsPanel.SetActive(SelectedItem != null);
+        DetailsPanel.SetActive(SelectedItemsSO != null);
 
-        if (SelectedItem == null)
+        if (SelectedItemsSO == null)
             return;
 
-        SelectedItemImage.sprite = SelectedItem.GetItemSprite();
+        SelectedItemImage.sprite = SelectedItemsSO.ItemSprite;
         if (SelectedItem != PreviousSelectedItem)
         {
             burst.Emit(1);
