@@ -44,8 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64be746642b6dcd4799935d023c5d34d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 7.5
-  SlowMultiplier: 1.65
-  TurnMultiplier: 2
+  Speed: 5
+  SlowMultiplier: 1
   ZoomMultiplier: 3
   virtualCamera: {fileID: 0}

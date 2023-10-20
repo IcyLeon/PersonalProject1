@@ -63,13 +63,15 @@ MonoBehaviour:
   InfomationPanel: {fileID: 0}
   PopupPanel: {fileID: 0}
   itemlisttemplate: {fileID: 11400000, guid: fc5ef0a01831d8c42ae8b7b2e7075098, type: 2}
+  CrossHair: {fileID: 8100762868000659337, guid: 35cd60bf475dacb45a6480fe5d70705f,
+    type: 3}
+  HitEffect: {fileID: 0}
   StarPrefab: {fileID: 3037185799881192553, guid: 56ffe41a903e65746b49e860c8f6dab2,
     type: 3}
   ItemBorderPrefab: {fileID: 5117009378638399214, guid: eaae2fd93d549274883a11e9ffce66e6,
     type: 3}
   SlotPrefab: {fileID: 537154594175900035, guid: 04bec387e0da13642a751ac93a6748a2,
     type: 3}
-  canvas: {fileID: 0}
 --- !u!114 &4402007108571799786
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83,6 +85,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characters:
+  - {fileID: 1701627816755134425, guid: 38488f1bfa0f45045bfb7d2753be07e2, type: 3}
   - {fileID: 4089876988080089552, guid: aaf82c83986815f449a11817f05cacf3, type: 3}
 --- !u!114 &3512376120949758771
 MonoBehaviour:

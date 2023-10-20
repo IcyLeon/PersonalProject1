@@ -85,7 +85,7 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
     private void CopyItemButton(Transform parentTransform)
     {
         if (parentTransform == null)
-            parentTransform = AssetManager.GetInstance().canvas.transform;
+            parentTransform = AssetManager.GetInstance().GetCanvasGO().transform;
 
         GameObject go = Instantiate(AssetManager.GetInstance().ItemBorderPrefab, parentTransform, false);
         go.transform.SetAsLastSibling();
@@ -109,7 +109,7 @@ public class ItemButton : MonoBehaviour, IPointerDownHandler, IPointerClickHandl
         if (ItemButton_Drag == null)
             return;
 
-        ItemButton_Drag.GetItemButtonRect().anchoredPosition = eventData.position - (AssetManager.GetInstance().canvas.renderingDisplaySize / 2f);
+        ItemButton_Drag.GetItemButtonRect().anchoredPosition = eventData.position - (AssetManager.GetInstance().GetCanvasGO().renderingDisplaySize / 2f);
     }
     public void OnEndDrag(PointerEventData eventData)
     {

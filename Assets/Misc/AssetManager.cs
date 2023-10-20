@@ -13,11 +13,15 @@ public class AssetManager : MonoBehaviour
     [SerializeField] MessagePanel InfomationPanel;
     [SerializeField] PopupPanel PopupPanel;
     [SerializeField] ItemsList itemlisttemplate;
+
+    [Header("Normal Attack Bow")]
+    [SerializeField] GameObject CrossHair;
+    [SerializeField] GameObject HitEffect;
+
     public GameObject StarPrefab;
     private GameObject DraggingItem;
     public GameObject ItemBorderPrefab;
     public GameObject SlotPrefab;
-    public Canvas canvas;
 
     private static AssetManager instance;
     // Start is called before the first frame update
@@ -33,6 +37,12 @@ public class AssetManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
     }
+
+    public GameObject GetCrossHair()
+    {
+        return CrossHair;
+    }
+
     public GameObject GetDragItem()
     {
         return DraggingItem;
@@ -50,6 +60,16 @@ public class AssetManager : MonoBehaviour
     {
         PopupPanel.SetMessage(text);
     }
+
+    public Canvas GetCanvasGO()
+    {
+        GameObject go = GameObject.Find("Canvas");
+        if (go == null)
+            return null;
+
+        return go.GetComponent<Canvas>();
+    }
+
     public void OpenMessagePanel(string headtext, string bodytext)
     {
         //PopupPanel.SetMessage(text);

@@ -240,6 +240,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Misc
       objectReference: {fileID: 0}
+    - target: {fileID: 4402007108571799786, guid: 1a28e1c295613a246ae300e8c19cad7f,
+        type: 3}
+      propertyPath: characters.Array.data[0]
+      value: 
+      objectReference: {fileID: 4089876988080089552, guid: aaf82c83986815f449a11817f05cacf3,
+        type: 3}
+    - target: {fileID: 4402007108571799786, guid: 1a28e1c295613a246ae300e8c19cad7f,
+        type: 3}
+      propertyPath: characters.Array.data[1]
+      value: 
+      objectReference: {fileID: 1701627816755134425, guid: 38488f1bfa0f45045bfb7d2753be07e2,
+        type: 3}
     - target: {fileID: 7252031540604705449, guid: 1a28e1c295613a246ae300e8c19cad7f,
         type: 3}
       propertyPath: canvas
@@ -524,7 +536,7 @@ MonoBehaviour:
   m_ShowCameraFrustum: 1
   m_IgnoreTimeScale: 0
   m_WorldUpOverride: {fileID: 0}
-  m_UpdateMethod: 2
+  m_UpdateMethod: 1
   m_BlendUpdateMethod: 1
   m_DefaultBlend:
     m_Style: 1
@@ -3221,7 +3233,7 @@ MonoBehaviour:
   m_DistanceLimit: 0
   m_MinimumOcclusionTime: 0
   m_CameraRadius: 0.1
-  m_Strategy: 1
+  m_Strategy: 0
   m_MaximumEffort: 4
   m_SmoothingTime: 0
   m_Damping: 0
@@ -3511,7 +3523,7 @@ MonoBehaviour:
     m_InputAxisName: Mouse Y
     m_InputAxisValue: 0
     m_InvertInput: 1
-    m_MinValue: -50
+    m_MinValue: -45
     m_MaxValue: 89
     m_Wrap: 0
     m_Recentering:
